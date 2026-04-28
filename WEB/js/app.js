@@ -1,7 +1,7 @@
-// API CONFIG
-const API_URL = 'http://localhost:8000';
-const authToken = localStorage.getItem('token') || '';
 
+// API CONFIG (shared from auth.js)
+// const API_URL is already declared in auth.js
+// authToken is already declared in auth.js
 // Chart instances
 let weeklyChartInstance = null;
 let weightChartInstance = null;
