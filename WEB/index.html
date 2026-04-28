@@ -229,38 +229,84 @@
             
             <!-- ROUTINES PAGE -->
             <section id="routinesPage" class="page">
-                <h1>Mis Rutinas</h1>
-                <p>Contenido de rutinas - en desarrollo</p>
+                <div class="page-header">
+                    <h1>MIS RUTINAS</h1>
+                    <button id="newRoutineBtn" class="btn-primary">+ Nueva Rutina</button>
+                </div>
+                <div id="routinesList" class="routines-grid"></div>
             </section>
             
             <!-- PROGRESS PAGE -->
             <section id="progressPage" class="page">
-                <h1>Mi Progreso</h1>
-                <p>Contenido de progreso - en desarrollo</p>
+                <div class="page-header">
+                    <h1>MI PROGRESO</h1>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-chart">
+                        <div class="chart-header">
+                            <h3>PESO (KG)</h3>
+                        </div>
+                        <canvas id="weightChart"></canvas>
+                    </div>
+                    <div class="progress-chart">
+                        <div class="chart-header">
+                            <h3>CALORÍAS PROMEDIO SEMANAL</h3>
+                        </div>
+                        <canvas id="caloriesChart"></canvas>
+                    </div>
+                </div>
             </section>
             
             <!-- CALENDAR PAGE -->
             <section id="calendarPage" class="page">
-                <h1>Calendario</h1>
-                <p>Contenido de calendario - en desarrollo</p>
+                <div class="page-header">
+                    <h1>CALENDARIO</h1>
+                </div>
+                <div class="calendar-container">
+                    <div id="calendarGrid" class="calendar-grid"></div>
+                </div>
             </section>
             
             <!-- EXERCISES PAGE -->
             <section id="exercisesPage" class="page">
-                <h1>Ejercicios</h1>
-                <p>Contenido de ejercicios - en desarrollo</p>
+                <div class="page-header">
+                    <h1>EJERCICIOS</h1>
+                    <input type="text" id="exerciseSearch" placeholder="🔍 Buscar ejercicio..." class="search-input">
+                </div>
+                <div id="exercisesList" class="exercises-list"></div>
             </section>
             
             <!-- STATS PAGE -->
             <section id="statsPage" class="page">
-                <h1>Estadísticas</h1>
-                <p>Contenido de estadísticas - en desarrollo</p>
+                <div class="page-header">
+                    <h1>ESTADÍSTICAS</h1>
+                </div>
+                <div class="stats-container">
+                    <div class="stat-box">
+                        <span class="stat-label">Total Entrenamientos</span>
+                        <span id="totalWorkouts" class="stat-big">0</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">Calorías Totales</span>
+                        <span id="totalCalories" class="stat-big">0</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">Minutos Totales</span>
+                        <span id="totalMinutes" class="stat-big">0</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">Promedio Semanal</span>
+                        <span id="weeklyAverage" class="stat-big">0</span>
+                    </div>
+                </div>
             </section>
             
             <!-- HISTORY PAGE -->
             <section id="historyPage" class="page">
-                <h1>Historial</h1>
-                <p>Contenido de historial - en desarrollo</p>
+                <div class="page-header">
+                    <h1>HISTORIAL</h1>
+                </div>
+                <div id="historyList" class="history-list"></div>
             </section>
         </main>
     </div>
