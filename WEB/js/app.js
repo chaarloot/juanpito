@@ -112,13 +112,7 @@ async function loadDashboard() {
         if (weekInfo) weekInfo.textContent = weekText;
         
         // Obtener estadísticas reales de la API
-        let stats = {
-            trainingSessions: 18,
-            caloriesBurned: '9.4K',
-            activeMinutes: 312,
-            personalRecords: 7,
-            streakDays: 23
-        };
+        let stats = getDefaultDashboardStats();
         
         try {
             const response = await fetch(`${API_URL}/sesiones/stats/resumen?dias_atras=30`, {
@@ -129,7 +123,7 @@ async function loadDashboard() {
                 const apiStats = await response.json();
                 stats = {
                     trainingSessions: apiStats.total_entrenamientos || 0,
-                    caloriesBurned: (apiStats.total_calorias / 1000).toFixed(1) + 'K',
+                    caloriesBurned: apiStats.total_calorias || 0,
                     activeMinutes: apiStats.total_minutos || 0,
                     personalRecords: 7,
                     streakDays: 23
@@ -138,10 +132,12 @@ async function loadDashboard() {
         } catch (apiError) {
             console.warn('Using fallback stats:', apiError);
         }
+
+        stats = mergeDashboardWithLocalWorkouts(stats);
         
         // Actualizar UI
         if (document.getElementById('trainingSessions')) document.getElementById('trainingSessions').textContent = stats.trainingSessions;
-        if (document.getElementById('caloriesBurned')) document.getElementById('caloriesBurned').textContent = stats.caloriesBurned;
+        if (document.getElementById('caloriesBurned')) document.getElementById('caloriesBurned').textContent = formatCaloriesDisplay(stats.caloriesBurned);
         if (document.getElementById('activeMinutes')) document.getElementById('activeMinutes').textContent = stats.activeMinutes;
         if (document.getElementById('personalRecords')) document.getElementById('personalRecords').textContent = stats.personalRecords;
         if (document.getElementById('streakDays')) document.getElementById('streakDays').textContent = stats.streakDays;
@@ -151,6 +147,90 @@ async function loadDashboard() {
     } catch (error) {
         console.error('Error loading dashboard:', error);
     }
+}
+
+function getDefaultDashboardStats() {
+    return {
+        trainingSessions: 18,
+        caloriesBurned: 9400,
+        activeMinutes: 312,
+        personalRecords: 7,
+        streakDays: 23,
+    };
+}
+
+function mergeDashboardWithLocalWorkouts(stats) {
+    const localWorkouts = JSON.parse(localStorage.getItem('vitaliaLocalWorkouts') || '[]');
+    if (localWorkouts.length === 0) {
+        return stats;
+    }
+
+    const extraStats = localWorkouts.reduce((accumulator, workout) => {
+        accumulator.trainingSessions += 1;
+        accumulator.caloriesBurned += Number(workout.calories) || 0;
+        accumulator.activeMinutes += parseWorkoutMinutes(workout.duration);
+        return accumulator;
+    }, {
+        trainingSessions: 0,
+        caloriesBurned: 0,
+        activeMinutes: 0,
+    });
+
+    return {
+        ...stats,
+        trainingSessions: (stats.trainingSessions || 0) + extraStats.trainingSessions,
+        caloriesBurned: (stats.caloriesBurned || 0) + extraStats.caloriesBurned,
+        activeMinutes: (stats.activeMinutes || 0) + extraStats.activeMinutes,
+    };
+}
+
+function parseWorkoutMinutes(duration) {
+    const parsed = parseInt(String(duration || '').replace(/[^0-9]/g, ''), 10);
+    return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function formatCaloriesDisplay(calories) {
+    const numericCalories = Number(calories) || 0;
+    return numericCalories >= 1000 ? `${(numericCalories / 1000).toFixed(1)}K` : String(numericCalories);
+}
+
+function updateDashboardMetricsAfterWorkout(workout) {
+    const trainingSessionsEl = document.getElementById('trainingSessions');
+    const caloriesBurnedEl = document.getElementById('caloriesBurned');
+    const activeMinutesEl = document.getElementById('activeMinutes');
+
+    if (trainingSessionsEl) {
+        trainingSessionsEl.textContent = String((parseInt(trainingSessionsEl.textContent, 10) || 0) + 1);
+    }
+
+    if (caloriesBurnedEl) {
+        const currentCalories = parseDisplayedCalories(caloriesBurnedEl.textContent);
+        const totalCalories = currentCalories + (Number(workout.calories) || 0);
+        caloriesBurnedEl.textContent = formatCaloriesDisplay(totalCalories);
+    }
+
+    if (activeMinutesEl) {
+        activeMinutesEl.textContent = String((parseInt(activeMinutesEl.textContent, 10) || 0) + parseWorkoutMinutes(workout.duration));
+    }
+
+    if (weeklyChartInstance) {
+        const currentDay = new Date().getDay();
+        const chartDayIndex = currentDay === 0 ? 6 : currentDay - 1;
+        const currentValue = Number(weeklyChartInstance.data.datasets[0].data[chartDayIndex]) || 0;
+        weeklyChartInstance.data.datasets[0].data[chartDayIndex] = currentValue + parseWorkoutMinutes(workout.duration);
+        weeklyChartInstance.update();
+    }
+}
+
+function parseDisplayedCalories(value) {
+    const text = String(value || '').trim();
+    if (!text) return 0;
+
+    if (text.toUpperCase().endsWith('K')) {
+        return Math.round(parseFloat(text) * 1000) || 0;
+    }
+
+    return parseInt(text.replace(/[^0-9]/g, ''), 10) || 0;
 }
 
 function renderWeeklyChart() {
@@ -587,11 +667,14 @@ function saveWorkout(e) {
         intensity
     };
     
-    const finishSave = () => {
-        const storedWorkouts = JSON.parse(localStorage.getItem('vitaliaLocalWorkouts') || '[]');
-        storedWorkouts.unshift(workout);
-        localStorage.setItem('vitaliaLocalWorkouts', JSON.stringify(storedWorkouts.slice(0, 50)));
+    const finishSave = (persistLocally) => {
+        if (persistLocally) {
+            const storedWorkouts = JSON.parse(localStorage.getItem('vitaliaLocalWorkouts') || '[]');
+            storedWorkouts.unshift(workout);
+            localStorage.setItem('vitaliaLocalWorkouts', JSON.stringify(storedWorkouts.slice(0, 50)));
+        }
 
+        updateDashboardMetricsAfterWorkout(workout);
         alert(`Entrenamiento "${name}" guardado exitosamente!`);
         closeNewWorkoutModal();
         document.body.style.overflow = '';
@@ -602,7 +685,7 @@ function saveWorkout(e) {
     };
 
     if (!authToken) {
-        finishSave();
+        finishSave(true);
         return;
     }
 
@@ -627,11 +710,11 @@ function saveWorkout(e) {
         return res.json();
     })
     .then(() => {
-        finishSave();
+        finishSave(false);
     })
     .catch(error => {
         console.error('Error saving workout:', error);
-        finishSave();
+        finishSave(true);
     });
 }
 
