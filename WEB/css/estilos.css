@@ -27,6 +27,7 @@ html, body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: var(--color-bg);
     color: var(--color-text);
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M3 3v18h18V3H3z" style="fill:%23c8ff00"></path></svg>') 10 10, auto;
 }
 
 body {
@@ -807,9 +808,10 @@ body {
 }
 
 .streak-label {
-    font-size: 11px;
-    color: var(--color-text-secondary);
+    font-size: 12px;
+    color: #ffffff;
     letter-spacing: 1px;
+    font-weight: 600;
 }
 
 .streak-info {

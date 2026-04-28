@@ -404,3 +404,41 @@ class TokenAutenticacionOut(BaseModel):
     revocado_en: Optional[datetime]
 
     model_config = {"from_attributes": True}
+
+
+# ════════════════════════════════════════════════════════════
+# SESIONES DE ENTRENAMIENTO
+# ════════════════════════════════════════════════════════════
+
+class SesionCrear(BaseModel):
+    tipo_entrenamiento: str
+    inicio: Optional[datetime] = None
+    duracion_minutos: Optional[int] = None
+    calorias_quemadas: Optional[int] = None
+    ritmo_promedio: Optional[int] = None
+    nivel_intensidad: Optional[int] = None  # 1-10
+    notas: Optional[str] = None
+
+
+class SesionActualizar(BaseModel):
+    tipo_entrenamiento: Optional[str] = None
+    duracion_minutos: Optional[int] = None
+    calorias_quemadas: Optional[int] = None
+    ritmo_promedio: Optional[int] = None
+    nivel_intensidad: Optional[int] = None
+    notas: Optional[str] = None
+
+
+class SesionRespuesta(BaseModel):
+    sesion_id: int
+    usuario_id: int
+    tipo_entrenamiento: str
+    inicio: datetime
+    duracion_minutos: Optional[int]
+    calorias_quemadas: Optional[int]
+    ritmo_promedio: Optional[int]
+    nivel_intensidad: Optional[int]
+    notas: Optional[str]
+    fecha_creacion: datetime
+
+    model_config = {"from_attributes": True}

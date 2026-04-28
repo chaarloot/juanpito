@@ -1,4 +1,14 @@
-// MOCK DATA
+// API CONFIG
+const API_URL = 'http://localhost:8000';
+const authToken = localStorage.getItem('token') || '';
+
+// Chart instances
+let weeklyChartInstance = null;
+let weightChartInstance = null;
+let caloriesChartInstance = null;
+let streakChartInstance = null;
+
+// MOCK DATA (fallback)
 const mockRoutines = [
     { id: 1, name: 'Push Day', description: 'Pecho, hombros y tríceps', exercises: 8, days: 'Lun/Jue', intensity: 'Alto' },
     { id: 2, name: 'Pull Day', description: 'Espalda y bíceps', exercises: 7, days: 'Mar/Vie', intensity: 'Alto' },
@@ -18,12 +28,12 @@ const mockExercises = [
 ];
 
 const mockHistory = [
-    { id: 1, date: '2024-01-15', activity: 'Push Day', details: 'Completado', duration: '65 min', calories: 450 },
-    { id: 2, date: '2024-01-14', activity: 'Cardio', details: 'Completado', duration: '30 min', calories: 280 },
-    { id: 3, date: '2024-01-13', activity: 'Pull Day', details: 'Completado', duration: '70 min', calories: 520 },
-    { id: 4, date: '2024-01-12', activity: 'Yoga', details: 'Completado', duration: '45 min', calories: 200 },
-    { id: 5, date: '2024-01-11', activity: 'Leg Day', details: 'Completado', duration: '75 min', calories: 580 },
-    { id: 6, date: '2024-01-10', activity: 'Full Body', details: 'Completado', duration: '55 min', calories: 420 }
+    { id: 1, date: '2024-01-15', activity: 'Push Day', details: 'Completado', duration: '65 min', calories: 450, status: 'completed' },
+    { id: 2, date: '2024-01-14', activity: 'Cardio', details: 'Completado', duration: '30 min', calories: 280, status: 'completed' },
+    { id: 3, date: '2024-01-13', activity: 'Pull Day', details: 'Completado', duration: '70 min', calories: 520, status: 'completed' },
+    { id: 4, date: '2024-01-12', activity: 'Yoga', details: 'Completado', duration: '45 min', calories: 200, status: 'completed' },
+    { id: 5, date: '2024-01-11', activity: 'Leg Day', details: 'Completado', duration: '75 min', calories: 580, status: 'completed' },
+    { id: 6, date: '2024-01-10', activity: 'Full Body', details: 'Completado', duration: '55 min', calories: 420, status: 'completed' }
 ];
 
 // NAVEGACIÓN
@@ -87,14 +97,33 @@ async function loadDashboard() {
         const weekInfo = document.getElementById('weekInfo');
         if (weekInfo) weekInfo.textContent = weekText;
         
-        // Datos simulados
-        const stats = {
+        // Obtener estadísticas reales de la API
+        let stats = {
             trainingSessions: 18,
             caloriesBurned: '9.4K',
             activeMinutes: 312,
             personalRecords: 7,
             streakDays: 23
         };
+        
+        try {
+            const response = await fetch(`${API_URL}/sesiones/stats/resumen?dias_atras=30`, {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+            
+            if (response.ok) {
+                const apiStats = await response.json();
+                stats = {
+                    trainingSessions: apiStats.total_entrenamientos || 0,
+                    caloriesBurned: (apiStats.total_calorias / 1000).toFixed(1) + 'K',
+                    activeMinutes: apiStats.total_minutos || 0,
+                    personalRecords: 7,
+                    streakDays: 23
+                };
+            }
+        } catch (apiError) {
+            console.warn('Using fallback stats:', apiError);
+        }
         
         // Actualizar UI
         if (document.getElementById('trainingSessions')) document.getElementById('trainingSessions').textContent = stats.trainingSessions;
@@ -114,9 +143,14 @@ function renderWeeklyChart() {
     const canvas = document.getElementById('weeklyChart');
     if (!canvas) return;
     
+    // Destruir gráfico anterior si existe
+    if (weeklyChartInstance) {
+        weeklyChartInstance.destroy();
+    }
+    
     const ctx = canvas.getContext('2d');
     
-    new Chart(ctx, {
+    weeklyChartInstance = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
@@ -196,7 +230,12 @@ function renderWeightChart() {
     const canvas = document.getElementById('weightChart');
     if (!canvas) return;
     
-    new Chart(canvas.getContext('2d'), {
+    // Destruir gráfico anterior si existe
+    if (weightChartInstance) {
+        weightChartInstance.destroy();
+    }
+    
+    weightChartInstance = new Chart(canvas.getContext('2d'), {
         type: 'line',
         data: {
             labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5', 'Sem 6', 'Sem 7', 'Sem 8'],
@@ -234,7 +273,12 @@ function renderCaloriesChart() {
     const canvas = document.getElementById('caloriesChart');
     if (!canvas) return;
     
-    new Chart(canvas.getContext('2d'), {
+    // Destruir gráfico anterior si existe
+    if (caloriesChartInstance) {
+        caloriesChartInstance.destroy();
+    }
+    
+    caloriesChartInstance = new Chart(canvas.getContext('2d'), {
         type: 'bar',
         data: {
             labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
@@ -374,23 +418,55 @@ function loadStats() {
 }
 
 // ============ HISTORIAL ============
-function loadHistory() {
+async function loadHistory() {
     const list = document.querySelector('.history-list');
     if (!list) return;
     
-    list.innerHTML = '';
-    mockHistory.forEach(item => {
-        const element = document.createElement('div');
-        element.className = 'history-item';
-        element.innerHTML = `
-            <div class="history-date">${new Date(item.date).toLocaleDateString('es-ES')}</div>
-            <div class="history-content">
-                <h4>${item.activity}</h4>
-                <p>${item.duration} • ${item.calories} calorías</p>
-            </div>
-        `;
-        list.appendChild(element);
-    });
+    list.innerHTML = '<p style="text-align: center; color: #a0a0a0;">Cargando...</p>';
+    
+    try {
+        const response = await fetch(`${API_URL}/sesiones/?dias_atras=90`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        
+        let historyData = mockHistory;
+        
+        if (response.ok) {
+            const apiData = await response.json();
+            // Convertir datos API a formato de visualización
+            historyData = apiData.map(s => ({
+                id: s.sesion_id,
+                date: new Date(s.inicio).toISOString().split('T')[0],
+                activity: s.tipo_entrenamiento,
+                details: 'Completado',
+                duration: `${s.duracion_minutos || 0} min`,
+                calories: s.calorias_quemadas || 0,
+                status: 'completed'
+            }));
+        }
+        
+        list.innerHTML = '';
+        if (historyData.length === 0) {
+            list.innerHTML = '<p style="text-align: center; color: #a0a0a0;">Sin entrenamientos registrados</p>';
+            return;
+        }
+        
+        historyData.forEach(item => {
+            const element = document.createElement('div');
+            element.className = 'history-item';
+            element.innerHTML = `
+                <div class="history-date">${new Date(item.date).toLocaleDateString('es-ES')}</div>
+                <div class="history-content">
+                    <h4>${item.activity}</h4>
+                    <p>${item.duration} • ${item.calories} calorías</p>
+                </div>
+            `;
+            list.appendChild(element);
+        });
+    } catch (error) {
+        console.error('Error loading history:', error);
+        list.innerHTML = '<p style="text-align: center; color: #ff4444;">Error al cargar el historial</p>';
+    }
 }
 
 // ============ NUEVO ENTRENAMIENTO ============
@@ -445,8 +521,39 @@ function saveWorkout(e) {
     e.preventDefault();
     const form = e.target;
     const name = form.querySelector('input[type="text"]').value;
-    alert(`Entrenamiento "${name}" guardado exitosamente`);
-    form.closest('.modal-backdrop').remove();
+    const duration = parseInt(form.querySelector('input[type="number"]').value) || 60;
+    const calories = parseInt(form.querySelectorAll('input[type="number"]')[1].value) || 450;
+    const intensity = parseInt(form.querySelector('input[type="range"]').value) || 5;
+    const notes = form.querySelector('textarea').value;
+    
+    // Enviar a la API
+    fetch(`${API_URL}/sesiones/`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${authToken}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            tipo_entrenamiento: name,
+            duracion_minutos: duration,
+            calorias_quemadas: calories,
+            nivel_intensidad: intensity,
+            notas: notes
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(`Entrenamiento "${name}" guardado exitosamente!`);
+        form.closest('.modal-backdrop').remove();
+        // Recargar historial si está visible
+        if (document.getElementById('historyPage')?.classList.contains('active')) {
+            loadHistory();
+        }
+    })
+    .catch(error => {
+        console.error('Error saving workout:', error);
+        alert('Error al guardar el entrenamiento');
+    });
 }
 
 // ============ INICIALIZACIÓN ============
@@ -455,7 +562,48 @@ window.addEventListener('DOMContentLoaded', () => {
     if (loginModal && loginModal.classList.contains('hidden')) {
         loadDashboard();
     }
+    
+    // Inicializar tabs para ejercicios hoy/entrenamientos
+    initializeTabs();
 });
+
+// Initializar tabs
+function initializeTabs() {
+    const tabButtons = document.querySelectorAll('[data-tab]');
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const tabName = button.getAttribute('data-tab');
+            const tabContainer = button.closest('[data-tab-container]');
+            
+            if (!tabContainer) return;
+            
+            // Remover active de todos los botones en este contenedor
+            tabContainer.querySelectorAll('[data-tab]').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Agregar active al botón clickeado
+            button.classList.add('active');
+            
+            // Filtrar contenido según el tab
+            filterTableByStatus(tabName);
+        });
+    });
+}
+
+function filterTableByStatus(status) {
+    const rows = document.querySelectorAll('tbody tr');
+    rows.forEach(row => {
+        const statusCell = row.querySelector('td:last-child');
+        if (status === 'todos') {
+            row.style.display = '';
+        } else if (status === 'completados') {
+            row.style.display = statusCell?.textContent.includes('✓') ? '' : 'none';
+        } else if (status === 'favoritos') {
+            row.style.display = statusCell?.textContent.includes('⭐') ? '' : 'none';
+        }
+    });
+}
 
 // Re-renderizar gráficos al redimensionar
 window.addEventListener('resize', () => {

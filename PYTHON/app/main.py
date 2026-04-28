@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 from app.core.database import engine
 from app.models import models
 from app.routers import usuarios
-from app.routers import alertas, auth, habitos, medicacion, metricas, planes
+from app.routers import alertas, auth, habitos, medicacion, metricas, planes, sesiones
 
 
 @asynccontextmanager
@@ -40,6 +40,7 @@ app.include_router(habitos.router)
 app.include_router(medicacion.router)
 app.include_router(planes.router)
 app.include_router(alertas.router)
+app.include_router(sesiones.router)
 
 
 @app.get("/", tags=["Health"])
