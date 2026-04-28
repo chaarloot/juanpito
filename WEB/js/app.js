@@ -38,8 +38,12 @@ const mockHistory = [
 
 // ============ NAVEGACIÓN - INICIALIZAR EN DOMContentLoaded ============
 function initializeNavigation() {
+    console.log('✅ initializeNavigation - Inicializando navegación...');
     const navLinks = document.querySelectorAll('.nav-link');
     const pages = document.querySelectorAll('.page');
+    
+    console.log('📍 navLinks encontrados:', navLinks.length);
+    console.log('📍 pages encontrados:', pages.length);
     
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
@@ -53,11 +57,19 @@ function initializeNavigation() {
             const pageName = link.getAttribute('data-page');
             const page = document.getElementById(pageName + 'Page');
             
+            console.log('🔄 Navegando a:', pageName);
+            console.log('📄 Página encontrada:', !!page, page?.id);
+            
             // Ocultar todas las páginas
             pages.forEach(p => p.classList.remove('active'));
             
             // Mostrar página seleccionada
-            page?.classList.add('active');
+            if (page) {
+                page.classList.add('active');
+                console.log('✅ Página mostrada:', page.id);
+            } else {
+                console.error('❌ Página no encontrada:', pageName + 'Page');
+            }
             
             // Cargar datos según la página
             switch(pageName) {
