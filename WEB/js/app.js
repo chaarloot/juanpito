@@ -36,54 +36,56 @@ const mockHistory = [
     { id: 6, date: '2024-01-10', activity: 'Full Body', details: 'Completado', duration: '55 min', calories: 420, status: 'completed' }
 ];
 
-// NAVEGACIÓN
-const navLinks = document.querySelectorAll('.nav-link');
-const pages = document.querySelectorAll('.page');
-
-navLinks.forEach(link => {
-    link.addEventListener('click', (e) => {
-        e.preventDefault();
-        
-        // Remover clase active de todos los links
-        navLinks.forEach(l => l.classList.remove('active'));
-        link.classList.add('active');
-        
-        // Obtener página a mostrar
-        const pageName = link.getAttribute('data-page');
-        const page = document.getElementById(pageName + 'Page');
-        
-        // Ocultar todas las páginas
-        pages.forEach(p => p.classList.remove('active'));
-        
-        // Mostrar página seleccionada
-        page?.classList.add('active');
-        
-        // Cargar datos según la página
-        switch(pageName) {
-            case 'dashboard':
-                loadDashboard();
-                break;
-            case 'routines':
-                loadRoutines();
-                break;
-            case 'progress':
-                loadProgress();
-                break;
-            case 'calendar':
-                loadCalendar();
-                break;
-            case 'exercises':
-                loadExercises();
-                break;
-            case 'stats':
-                loadStats();
-                break;
-            case 'history':
-                loadHistory();
-                break;
-        }
+// ============ NAVEGACIÓN - INICIALIZAR EN DOMContentLoaded ============
+function initializeNavigation() {
+    const navLinks = document.querySelectorAll('.nav-link');
+    const pages = document.querySelectorAll('.page');
+    
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            // Remover clase active de todos los links
+            navLinks.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+            
+            // Obtener página a mostrar
+            const pageName = link.getAttribute('data-page');
+            const page = document.getElementById(pageName + 'Page');
+            
+            // Ocultar todas las páginas
+            pages.forEach(p => p.classList.remove('active'));
+            
+            // Mostrar página seleccionada
+            page?.classList.add('active');
+            
+            // Cargar datos según la página
+            switch(pageName) {
+                case 'dashboard':
+                    loadDashboard();
+                    break;
+                case 'routines':
+                    loadRoutines();
+                    break;
+                case 'progress':
+                    loadProgress();
+                    break;
+                case 'calendar':
+                    loadCalendar();
+                    break;
+                case 'exercises':
+                    loadExercises();
+                    break;
+                case 'stats':
+                    loadStats();
+                    break;
+                case 'history':
+                    loadHistory();
+                    break;
+            }
+        });
     });
-});
+}
 
 // ============ DASHBOARD ============
 async function loadDashboard() {
@@ -562,6 +564,9 @@ window.addEventListener('DOMContentLoaded', () => {
     if (loginModal && loginModal.classList.contains('hidden')) {
         loadDashboard();
     }
+    
+    // Inicializar navegación
+    initializeNavigation();
     
     // Inicializar tabs para ejercicios hoy/entrenamientos
     initializeTabs();
