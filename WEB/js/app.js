@@ -439,24 +439,31 @@ async function loadHistory() {
     list.innerHTML = '<p style="text-align: center; color: #a0a0a0;">Cargando...</p>';
     
     try {
-        const response = await fetch(`${API_URL}/sesiones/?dias_atras=90`, {
-            headers: { 'Authorization': `Bearer ${authToken}` }
-        });
-        
         let historyData = mockHistory;
-        
-        if (response.ok) {
-            const apiData = await response.json();
-            // Convertir datos API a formato de visualización
-            historyData = apiData.map(s => ({
-                id: s.sesion_id,
-                date: new Date(s.inicio).toISOString().split('T')[0],
-                activity: s.tipo_entrenamiento,
-                details: 'Completado',
-                duration: `${s.duracion_minutos || 0} min`,
-                calories: s.calorias_quemadas || 0,
-                status: 'completed'
-            }));
+
+        if (authToken) {
+            const response = await fetch(`${API_URL}/sesiones/?dias_atras=90`, {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+
+            if (response.ok) {
+                const apiData = await response.json();
+                // Convertir datos API a formato de visualización
+                historyData = apiData.map(s => ({
+                    id: s.sesion_id,
+                    date: new Date(s.inicio).toISOString().split('T')[0],
+                    activity: s.tipo_entrenamiento,
+                    details: 'Completado',
+                    duration: `${s.duracion_minutos || 0} min`,
+                    calories: s.calorias_quemadas || 0,
+                    status: 'completed'
+                }));
+            }
+        }
+
+        const localWorkouts = JSON.parse(localStorage.getItem('vitaliaLocalWorkouts') || '[]');
+        if (localWorkouts.length > 0) {
+            historyData = [...localWorkouts, ...historyData];
         }
         
         list.innerHTML = '';
@@ -486,44 +493,73 @@ async function loadHistory() {
 // ============ NUEVO ENTRENAMIENTO ============
 document.querySelector('.btn-new-training')?.addEventListener('click', showNewWorkoutModal);
 
+function closeNewWorkoutModal() {
+    document.getElementById('newTrainingModal')?.remove();
+}
+
 function showNewWorkoutModal() {
+    closeNewWorkoutModal();
+
     const modal = document.createElement('div');
     modal.className = 'modal-backdrop';
+    modal.id = 'newTrainingModal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
     modal.innerHTML = `
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Nuevo Entrenamiento</h2>
-                <button onclick="this.closest('.modal-backdrop').remove()" style="background: none; border: none; color: #c8ff00; cursor: pointer; font-size: 24px;">×</button>
+                <button type="button" class="modal-close" aria-label="Cerrar">×</button>
             </div>
-            <form onsubmit="saveWorkout(event)">
+            <form id="newWorkoutForm">
                 <div class="form-group">
                     <label>Nombre del Entrenamiento</label>
-                    <input type="text" required placeholder="Ej: Push Day">
+                    <input type="text" name="name" required placeholder="Ej: Push Day">
                 </div>
                 <div class="form-group">
                     <label>Duración (minutos)</label>
-                    <input type="number" required placeholder="60">
+                    <input type="number" name="duration" min="1" required placeholder="60">
                 </div>
                 <div class="form-group">
                     <label>Calorías Estimadas</label>
-                    <input type="number" required placeholder="450">
+                    <input type="number" name="calories" min="0" required placeholder="450">
                 </div>
                 <div class="form-group">
                     <label>Intensidad</label>
-                    <input type="range" min="1" max="10" value="5">
+                    <input type="range" name="intensity" min="1" max="10" value="5">
                     <span id="intensityValue">5</span>/10
                 </div>
                 <div class="form-group">
                     <label>Notas</label>
-                    <textarea placeholder="Notas del entrenamiento..."></textarea>
+                    <textarea name="notes" placeholder="Notas del entrenamiento..."></textarea>
                 </div>
                 <button type="submit" class="btn-primary">Guardar Entrenamiento</button>
-                <button type="button" onclick="this.closest('.modal-backdrop').remove()" class="btn-secondary">Cancelar</button>
+                <button type="button" class="btn-secondary modal-cancel">Cancelar</button>
             </form>
         </div>
     `;
     
     document.body.appendChild(modal);
+    document.body.style.overflow = 'hidden';
+
+    modal.addEventListener('click', (event) => {
+        if (event.target === modal) {
+            closeNewWorkoutModal();
+            document.body.style.overflow = '';
+        }
+    });
+
+    modal.querySelector('.modal-close')?.addEventListener('click', () => {
+        closeNewWorkoutModal();
+        document.body.style.overflow = '';
+    });
+
+    modal.querySelector('.modal-cancel')?.addEventListener('click', () => {
+        closeNewWorkoutModal();
+        document.body.style.overflow = '';
+    });
+
+    modal.querySelector('#newWorkoutForm')?.addEventListener('submit', saveWorkout);
     
     const intensityInput = modal.querySelector('input[type="range"]');
     intensityInput.addEventListener('input', (e) => {
@@ -534,13 +570,42 @@ function showNewWorkoutModal() {
 function saveWorkout(e) {
     e.preventDefault();
     const form = e.target;
-    const name = form.querySelector('input[type="text"]').value;
-    const duration = parseInt(form.querySelector('input[type="number"]').value) || 60;
-    const calories = parseInt(form.querySelectorAll('input[type="number"]')[1].value) || 450;
-    const intensity = parseInt(form.querySelector('input[type="range"]').value) || 5;
-    const notes = form.querySelector('textarea').value;
+    const name = form.elements.name.value.trim();
+    const duration = parseInt(form.elements.duration.value, 10) || 60;
+    const calories = parseInt(form.elements.calories.value, 10) || 450;
+    const intensity = parseInt(form.elements.intensity.value, 10) || 5;
+    const notes = form.elements.notes.value.trim();
+
+    const workout = {
+        id: Date.now(),
+        date: new Date().toISOString(),
+        activity: name,
+        details: notes || 'Entrenamiento creado manualmente',
+        duration: `${duration} min`,
+        calories,
+        status: 'completed',
+        intensity
+    };
     
-    // Enviar a la API
+    const finishSave = () => {
+        const storedWorkouts = JSON.parse(localStorage.getItem('vitaliaLocalWorkouts') || '[]');
+        storedWorkouts.unshift(workout);
+        localStorage.setItem('vitaliaLocalWorkouts', JSON.stringify(storedWorkouts.slice(0, 50)));
+
+        alert(`Entrenamiento "${name}" guardado exitosamente!`);
+        closeNewWorkoutModal();
+        document.body.style.overflow = '';
+
+        if (document.getElementById('historyPage')?.classList.contains('active')) {
+            loadHistory();
+        }
+    };
+
+    if (!authToken) {
+        finishSave();
+        return;
+    }
+
     fetch(`${API_URL}/sesiones/`, {
         method: 'POST',
         headers: {
@@ -555,18 +620,18 @@ function saveWorkout(e) {
             notas: notes
         })
     })
-    .then(res => res.json())
-    .then(data => {
-        alert(`Entrenamiento "${name}" guardado exitosamente!`);
-        form.closest('.modal-backdrop').remove();
-        // Recargar historial si está visible
-        if (document.getElementById('historyPage')?.classList.contains('active')) {
-            loadHistory();
+    .then(async res => {
+        if (!res.ok) {
+            throw new Error(await res.text());
         }
+        return res.json();
+    })
+    .then(() => {
+        finishSave();
     })
     .catch(error => {
         console.error('Error saving workout:', error);
-        alert('Error al guardar el entrenamiento');
+        finishSave();
     });
 }
 
