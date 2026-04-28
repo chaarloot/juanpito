@@ -115,9 +115,11 @@ async function loadDashboard() {
         let stats = getDefaultDashboardStats();
         
         try {
-            const response = await fetch(`${API_URL}/sesiones/stats/resumen?dias_atras=30`, {
-                headers: { 'Authorization': `Bearer ${authToken}` }
-            });
+            const response = await (window.authFetch
+                ? window.authFetch(`${API_URL}/sesiones/stats/resumen?dias_atras=30`)
+                : fetch(`${API_URL}/sesiones/stats/resumen?dias_atras=30`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                }));
             
             if (response.ok) {
                 const apiStats = await response.json();
@@ -522,9 +524,11 @@ async function loadHistory() {
         let historyData = mockHistory;
 
         if (authToken) {
-            const response = await fetch(`${API_URL}/sesiones/?dias_atras=90`, {
-                headers: { 'Authorization': `Bearer ${authToken}` }
-            });
+            const response = await (window.authFetch
+                ? window.authFetch(`${API_URL}/sesiones/?dias_atras=90`)
+                : fetch(`${API_URL}/sesiones/?dias_atras=90`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                }));
 
             if (response.ok) {
                 const apiData = await response.json();
@@ -689,33 +693,49 @@ function saveWorkout(e) {
         return;
     }
 
-    fetch(`${API_URL}/sesiones/`, {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${authToken}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            tipo_entrenamiento: name,
-            duracion_minutos: duration,
-            calorias_quemadas: calories,
-            nivel_intensidad: intensity,
-            notas: notes
+    const request = window.authFetch
+        ? window.authFetch(`${API_URL}/sesiones/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                tipo_entrenamiento: name,
+                duracion_minutos: duration,
+                calorias_quemadas: calories,
+                nivel_intensidad: intensity,
+                notas: notes
+            })
         })
-    })
-    .then(async res => {
-        if (!res.ok) {
-            throw new Error(await res.text());
-        }
-        return res.json();
-    })
-    .then(() => {
-        finishSave(false);
-    })
-    .catch(error => {
-        console.error('Error saving workout:', error);
-        finishSave(true);
-    });
+        : fetch(`${API_URL}/sesiones/`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${authToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                tipo_entrenamiento: name,
+                duracion_minutos: duration,
+                calorias_quemadas: calories,
+                nivel_intensidad: intensity,
+                notas: notes
+            })
+        });
+
+    request
+        .then(async res => {
+            if (!res.ok) {
+                throw new Error(await res.text());
+            }
+            return res.json();
+        })
+        .then(() => {
+            finishSave(false);
+        })
+        .catch(error => {
+            console.error('Error saving workout:', error);
+            finishSave(true);
+        });
 }
 
 // ============ INICIALIZACIÓN ============

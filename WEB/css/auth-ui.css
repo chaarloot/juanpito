@@ -1,0 +1,40 @@
+/* Auth UI helpers */
+.auth-message {
+    min-height: 20px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--color-text-secondary);
+}
+
+.auth-message.error {
+    color: var(--color-red);
+}
+
+.auth-message.success {
+    color: var(--color-green);
+}
+
+.btn-primary.is-loading,
+.btn-secondary.is-loading {
+    opacity: 0.75;
+    pointer-events: none;
+}
+
+@media (max-width: 768px) {
+    .login-container {
+        max-width: 100%;
+        padding: 28px 22px;
+    }
+
+    .login-header h1 {
+        font-size: 30px;
+    }
+
+    .login-header p {
+        letter-spacing: 1px;
+    }
+
+    .auth-message {
+        min-height: 24px;
+    }
+}

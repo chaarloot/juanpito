@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vitalia CJ - Fitness Tracker</title>
     <link rel="stylesheet" href="css/estilos.css">
+    <link rel="stylesheet" href="css/auth-ui.css">
 </head>
 <body>
     <!-- MODAL DE LOGIN -->
@@ -25,6 +26,8 @@
                     <label for="loginPassword">🔐 Contraseña</label>
                     <input type="password" id="loginPassword" placeholder="••••••••" required>
                 </div>
+
+                <p id="loginMessage" class="auth-message" aria-live="polite"></p>
                 
                 <button type="submit" class="btn-primary btn-full">Iniciar Sesión</button>
                 
@@ -51,6 +54,8 @@
                     <label for="regPassword">🔐 Contraseña</label>
                     <input type="password" id="regPassword" placeholder="••••••••" required>
                 </div>
+
+                <p id="registerMessage" class="auth-message" aria-live="polite"></p>
                 
                 <button type="submit" class="btn-primary btn-full">Registrarse</button>
                 

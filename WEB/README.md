@@ -61,7 +61,11 @@ En la pantalla de login, haz clic en **"Regístrate aquí"** y completa:
 
 ### 4. Inicia Sesión
 
-Usa las credenciales que acabas de crear.
+Usa esta credencial de prueba:
+
+- `juan@test.com` / `Vitalia2026!`
+
+Si la sesión expira, el frontend intenta renovar el token automáticamente antes de mostrar el login.
 
 ### 5. Explora el Dashboard
 
@@ -135,9 +139,8 @@ En `css/estilos.css`:
 
 ## 📊 Próximas Mejoras
 
-- [ ] Formulario para crear nuevo entrenamiento
 - [ ] Editar/eliminar ejercicios
-- [ ] Gráficos de progreso temporal
+- [ ] Gráficos de progreso temporal más avanzados
 - [ ] Notificaciones en tiempo real
 - [ ] Exportar datos a PDF
 - [ ] Integración con wearables
@@ -153,7 +156,7 @@ En `css/estilos.css`:
 
 ### Error: "CORS"
 - El backend debe tener CORS habilitado
-- En `PYTHON/app/main.py`, CORS está configurado con `allow_origins=["*"]`
+- En `PYTHON/app/main.py`, CORS está configurado para aceptar `null` y orígenes locales de desarrollo
 
 ### Error: "Email ya existe"
 - El email ya está registrado en la base de datos
@@ -163,6 +166,8 @@ En `css/estilos.css`:
 
 - Los datos se guardan en SQLite (`vitalia.db`)
 - Los tokens se guardan en localStorage
+- El frontend muestra mensajes de estado en login y registro
+- El frontend intenta refrescar el token automáticamente si expira
 - El frontend es 100% stand-alone, sin dependencias de build
 - Compatible con todos los navegadores modernos
 
