@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vitalia CJ - Fitness Tracker</title>
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+    <!-- MODAL DE LOGIN -->
+    <div id="loginModal" class="modal-overlay">
+        <div class="login-container">
+            <div class="login-header">
+                <h1>VITALIA<span>JC</span></h1>
+                <p>Fitness Tracker</p>
+            </div>
+            
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="loginEmail">📧 Email</label>
+                    <input type="email" id="loginEmail" placeholder="tu@email.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="loginPassword">🔐 Contraseña</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" required>
+                </div>
+                
+                <button type="submit" class="btn-primary btn-full">Iniciar Sesión</button>
+                
+                <p class="toggle-auth">¿No tienes cuenta? <a href="#" onclick="toggleRegister(event)">Regístrate aquí</a></p>
+            </form>
+            
+            <form id="registerForm" class="login-form hidden">
+                <div class="form-group">
+                    <label for="regName">👤 Nombre</label>
+                    <input type="text" id="regName" placeholder="Juan" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="regLastname">👤 Apellidos</label>
+                    <input type="text" id="regLastname" placeholder="Carlos López" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="regEmail">📧 Email</label>
+                    <input type="email" id="regEmail" placeholder="tu@email.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="regPassword">🔐 Contraseña</label>
+                    <input type="password" id="regPassword" placeholder="••••••••" required>
+                </div>
+                
+                <button type="submit" class="btn-primary btn-full">Registrarse</button>
+                
+                <p class="toggle-auth">¿Ya tienes cuenta? <a href="#" onclick="toggleRegister(event)">Inicia sesión</a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="mainApp" class="app hidden">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-text">VITALIA<strong>JC</strong></span>
+                    <span class="logo-subtitle">TRAINING TRACKER</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <h3>PRINCIPAL</h3>
+                    <a href="#" class="nav-link active" data-page="dashboard">
+                        🏠 Dashboard
+                    </a>
+                    <a href="#" class="nav-link" data-page="routines">
+                        📋 Mis Rutinas
+                    </a>
+                    <a href="#" class="nav-link" data-page="progress">
+                        📊 Progreso
+                    </a>
+                    <a href="#" class="nav-link" data-page="calendar">
+                        📅 Calendario
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <h3>ENTRENAMIENTO</h3>
+                    <a href="#" class="nav-link" data-page="exercises">
+                        💪 Ejercicios
+                    </a>
+                    <a href="#" class="nav-link" data-page="stats">
+                        📈 Estadísticas
+                    </a>
+                    <a href="#" class="nav-link" data-page="history">
+                        ⏱️ Historial
+                    </a>
+                </div>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-card">
+                    <div class="user-avatar">JC</div>
+                    <div class="user-info">
+                        <p id="userName" class="user-name">Juan Carlos</p>
+                        <p id="userPlan" class="user-plan">Plan Pro • 3 meses</p>
+                    </div>
+                </div>
+                <button id="logoutBtn" class="btn-logout">🚪 Salir</button>
+            </div>
+        </aside>
+        
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <!-- DASHBOARD PAGE -->
+            <section id="dashboardPage" class="page active">
+                <div class="dashboard-header">
+                    <div class="header-title">
+                        <h1>MI PANEL</h1>
+                        <p id="weekInfo">Semana del 21 al 27 de abril, 2026</p>
+                    </div>
+                    <button class="btn-new-training">+ Nuevo Entrenamiento</button>
+                </div>
+                
+                <!-- ESTADÍSTICAS PRINCIPALES -->
+                <div class="stats-grid">
+                    <div class="stat-card yellow">
+                        <div class="stat-label">ENTRENAMIENTOS</div>
+                        <div class="stat-value" id="trainingSessions">18</div>
+                        <div class="stat-change">↑ +3 vs semana anterior</div>
+                        <div class="stat-bar"></div>
+                    </div>
+                    
+                    <div class="stat-card red">
+                        <div class="stat-label">CALORÍAS QUEMADAS</div>
+                        <div class="stat-value" id="caloriesBurned">9.4K</div>
+                        <div class="stat-change">↑ +840 este mes</div>
+                        <div class="stat-bar"></div>
+                    </div>
+                    
+                    <div class="stat-card blue">
+                        <div class="stat-label">MINUTOS ACTIVOS</div>
+                        <div class="stat-value" id="activeMinutes">312</div>
+                        <div class="stat-change">↓ -22 vs semana anterior</div>
+                        <div class="stat-bar"></div>
+                    </div>
+                    
+                    <div class="stat-card green">
+                        <div class="stat-label">RÉCORDS PERSONALES</div>
+                        <div class="stat-value" id="personalRecords">7</div>
+                        <div class="stat-change">↑ +2 nuevos este mes</div>
+                        <div class="stat-bar"></div>
+                    </div>
+                </div>
+                
+                <!-- GRÁFICOS Y RACHA -->
+                <div class="content-grid">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3>ACTIVIDAD SEMANAL</h3>
+                            <span class="badge-active">Esta semana</span>
+                        </div>
+                        <div class="chart-area">
+                            <canvas id="weeklyChart" width="500" height="250"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="streak-container">
+                        <div class="chart-header">
+                            <h3>RACHA ACTUAL</h3>
+                            <span class="badge-active">Activa</span>
+                        </div>
+                        <div class="streak-circle">
+                            <div class="streak-number" id="streakDays">23</div>
+                            <div class="streak-label">DÍAS</div>
+                        </div>
+                        <div class="streak-info">
+                            <p><strong id="bestStreak">Mejor racha: 41 días</strong></p>
+                            <p id="goals"><span class="percentage">80% completado</span></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- EJERCICIOS ACTUALES -->
+                <div class="exercises-container">
+                    <div class="exercises-header">
+                        <h3>ENTRENAMIENTOS HOY</h3>
+                        <div class="exercise-filters">
+                            <button class="filter-btn active">Todos</button>
+                            <button class="filter-btn">Favoritos</button>
+                            <button class="filter-btn">Completados</button>
+                        </div>
+                    </div>
+                    
+                    <div class="exercises-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>EJERCICIO</th>
+                                    <th>SERIES • REPS</th>
+                                    <th>PESO (KG)</th>
+                                    <th>MEJORA</th>
+                                    <th>STATUS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="exercisesTableBody">
+                                <tr>
+                                    <td><span class="exercise-badge">Press de banca</span></td>
+                                    <td>4 x 8</td>
+                                    <td>95</td>
+                                    <td>↑ +5 kg</td>
+                                    <td><span class="badge-complete">✓</span></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="exercise-badge blue">Sentadilla</span></td>
+                                    <td>5 x 5</td>
+                                    <td>120</td>
+                                    <td>↑ +2.5 kg</td>
+                                    <td><span class="badge-pending">⏳</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- ROUTINES PAGE -->
+            <section id="routinesPage" class="page">
+                <h1>Mis Rutinas</h1>
+                <p>Contenido de rutinas - en desarrollo</p>
+            </section>
+            
+            <!-- PROGRESS PAGE -->
+            <section id="progressPage" class="page">
+                <h1>Mi Progreso</h1>
+                <p>Contenido de progreso - en desarrollo</p>
+            </section>
+            
+            <!-- CALENDAR PAGE -->
+            <section id="calendarPage" class="page">
+                <h1>Calendario</h1>
+                <p>Contenido de calendario - en desarrollo</p>
+            </section>
+            
+            <!-- EXERCISES PAGE -->
+            <section id="exercisesPage" class="page">
+                <h1>Ejercicios</h1>
+                <p>Contenido de ejercicios - en desarrollo</p>
+            </section>
+            
+            <!-- STATS PAGE -->
+            <section id="statsPage" class="page">
+                <h1>Estadísticas</h1>
+                <p>Contenido de estadísticas - en desarrollo</p>
+            </section>
+            
+            <!-- HISTORY PAGE -->
+            <section id="historyPage" class="page">
+                <h1>Historial</h1>
+                <p>Contenido de historial - en desarrollo</p>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
