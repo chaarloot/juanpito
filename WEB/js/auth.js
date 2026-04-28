@@ -25,7 +25,8 @@ loginForm.addEventListener('submit', async (e) => {
         });
         
         if (!response.ok) {
-            throw new Error('Email o contraseña incorrectos');
+            const errorData = await response.json();
+            throw new Error(errorData.detail || 'Email o contraseña incorrectos');
         }
         
         const data = await response.json();
@@ -63,7 +64,12 @@ registerForm.addEventListener('submit', async (e) => {
                 nombre,
                 apellidos,
                 email,
-                password_hash: password,
+                password: password,
+                fecha_nacimiento: null,
+                genero: null,
+                altura_cm: null,
+                peso_kg: null,
+                zona_horaria: 'UTC'
             })
         });
         
