@@ -41,5 +41,5 @@ function checkStrength(val) {
 }
 
 function goToDashboard() {
-  window.location.href = '../pages/VitaliaJC.html';
+  window.location.href = '../index.html';
 }
