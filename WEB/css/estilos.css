@@ -104,6 +104,7 @@ select {
     background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
     z-index: 1000;
     transition: var(--transition);
+    padding: 24px;
 }
 
 .modal-overlay.hidden {
@@ -241,6 +242,12 @@ select {
 
 .toggle-auth a:hover {
     text-decoration: underline;
+}
+
+.login-form .form-group input,
+.login-form .btn-primary,
+.login-form .btn-secondary {
+    min-height: 48px;
 }
 
 /* MAIN APP */
@@ -1187,27 +1194,260 @@ tbody td {
 }
 
 @media (max-width: 768px) {
+    body {
+        overflow-y: auto;
+    }
+
+    .modal-overlay {
+        align-items: flex-start;
+        min-height: 100dvh;
+        padding: 16px;
+    }
+
+    .login-container {
+        max-width: 100%;
+        padding: 28px 20px;
+        border-radius: 20px;
+    }
+
+    .login-header {
+        margin-bottom: 28px;
+    }
+
+    .login-header h1 {
+        font-size: 30px;
+    }
+
+    .login-header p {
+        font-size: 12px;
+        letter-spacing: 1.2px;
+    }
+
+    .login-form {
+        gap: 16px;
+    }
+
+    .form-group input,
+    .btn-primary,
+    .btn-secondary {
+        font-size: 16px;
+    }
+
+    .toggle-auth {
+        line-height: 1.5;
+    }
+
     .app {
         flex-direction: column;
     }
     
     .sidebar {
+        position: sticky;
+        top: 0;
+        z-index: 20;
         width: 100%;
         height: auto;
+        padding: 12px 14px 10px;
+        gap: 10px;
         border-right: none;
         border-bottom: 1px solid rgba(200, 255, 0, 0.1);
+        background: linear-gradient(180deg, rgba(24, 24, 24, 0.98), rgba(12, 12, 12, 0.98));
+    }
+
+    .sidebar-header {
+        padding: 0;
+        border-bottom: none;
+    }
+
+    .sidebar-nav {
+        display: flex;
+        gap: 14px;
+        padding: 0;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .sidebar-nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .nav-section {
+        display: flex;
+        gap: 8px;
+        padding: 0;
+        margin-bottom: 0;
+    }
+
+    .nav-section h3 {
+        display: none;
+    }
+
+    .nav-link {
+        padding: 10px 14px;
+        border-left: none;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.04);
+        flex: 0 0 auto;
+        white-space: nowrap;
+    }
+
+    .nav-link.active {
+        border-left-color: transparent;
+        background: rgba(200, 255, 0, 0.14);
+    }
+
+    .sidebar-footer {
+        display: none;
     }
     
     .main-content {
         flex: 1;
+        min-height: 0;
+        overflow: visible;
     }
     
     .page {
-        padding: 20px;
+        padding: 16px;
+    }
+
+    .dashboard-header,
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+    }
+
+    .page-header h1,
+    .dashboard-header h1 {
+        font-size: 26px;
+    }
+
+    .search-input {
+        width: 100%;
     }
     
     .stats-grid {
         grid-template-columns: 1fr;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .stat-card {
+        padding: 18px;
+    }
+
+    .content-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .chart-container,
+    .streak-container,
+    .exercises-container,
+    .progress-chart,
+    .calendar-container,
+    .routine-card,
+    .stat-box,
+    .modal-content {
+        padding: 16px;
+    }
+
+    .chart-area {
+        height: 180px;
+    }
+
+    .chart-header,
+    .exercises-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .dashboard-header .btn-new-training,
+    .page-header .btn-primary,
+    .page-header .btn-new-training {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .dashboard-header {
+        margin-bottom: 20px;
+    }
+
+    .header-title h1,
+    .page-header h1 {
+        font-size: 24px;
+    }
+
+    .stat-value,
+    .stat-big {
+        font-size: 28px;
+    }
+
+    .streak-circle {
+        width: 132px;
+        height: 132px;
+        margin: 14px auto;
+    }
+
+    .streak-number {
+        font-size: 42px;
+    }
+
+    .streak-info {
+        margin-top: 14px;
+    }
+
+    .exercise-filters {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 2px;
+        scrollbar-width: none;
+    }
+
+    .exercise-filters::-webkit-scrollbar {
+        display: none;
+    }
+
+    .filter-btn {
+        flex: 0 0 auto;
+    }
+
+    .exercises-table table {
+        min-width: 560px;
+    }
+
+    .field-row {
+        grid-template-columns: 1fr;
+    }
+
+    .social-row {
+        flex-direction: column;
+    }
+
+    .nivel-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .brand-mark {
+        font-size: 56px;
+    }
+
+    .features-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .right-panel {
+        width: 100%;
+        padding: 28px 20px;
+    }
+
+    .left-panel {
+        padding: 28px 20px 24px;
     }
 
     .modal-content {

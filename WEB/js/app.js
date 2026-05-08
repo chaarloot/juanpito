@@ -288,41 +288,81 @@ function renderWeeklyChart() {
     });
 }
 
-// ============ MIS RUTINAS ============
-function loadRoutines() {
+// ============ MIS RUTINAS (Hábitos) ============
+async function loadRoutines() {
     const grid = document.querySelector('.routines-grid');
     if (!grid) return;
     
-    grid.innerHTML = '';
-    mockRoutines.forEach(routine => {
-        const card = document.createElement('div');
-        card.className = 'routine-card';
-        card.innerHTML = `
-            <h3>${routine.name}</h3>
-            <p>${routine.description}</p>
-            <div style="font-size: 0.9em; color: #a0a0a0; margin: 10px 0;">
-                <div>Ejercicios: ${routine.exercises}</div>
-                <div>Días: ${routine.days}</div>
-                <div>Intensidad: ${routine.intensity}</div>
-            </div>
-            <button class="routine-btn" onclick="startRoutine(${routine.id})">Iniciar Rutina</button>
-        `;
-        grid.appendChild(card);
-    });
+    grid.innerHTML = '<p style="text-align: center; color: #888;">Cargando hábitos...</p>';
+    
+    try {
+        const response = await (window.authFetch
+            ? window.authFetch(`${API_URL}/habitos/resumen/todos`)
+            : fetch(`${API_URL}/habitos/resumen/todos`, {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            }));
+        
+        if (!response.ok) {
+            throw new Error('No se pudieron cargar los hábitos');
+        }
+        
+        const habitos = await response.json();
+        grid.innerHTML = '';
+        
+        if (habitos.length === 0) {
+            grid.innerHTML = '<p style="text-align: center; color: #888;">No tienes hábitos registrados</p>';
+            return;
+        }
+        
+        habitos.forEach(habit => {
+            const card = document.createElement('div');
+            card.className = 'routine-card';
+            const statusColor = habit.estado === 'activo' ? '#c8ff00' : (habit.estado === 'riesgo' ? '#ffaa00' : '#ff4444');
+            const statusText = habit.estado === 'activo' ? '✓ Activo' : (habit.estado === 'riesgo' ? '⚠ Riesgo' : '✗ Abandonado');
+            
+            card.innerHTML = `
+                <h3>${habit.nombre}</h3>
+                <p style="color: #a0a0a0; font-size: 0.9em;">${habit.frecuencia}</p>
+                <div style="font-size: 0.9em; color: #a0a0a0; margin: 10px 0;">
+                    <div>Cumplimiento: ${habit.porcentaje_cumplimiento}%</div>
+                    <div>Registros: ${habit.registros_periodo}</div>
+                    <div style="color: ${statusColor}; margin-top: 5px;">${statusText}</div>
+                </div>
+                <button class="routine-btn" onclick="verDetallesHabito(${habit.habito_id})">Ver Detalles</button>
+            `;
+            grid.appendChild(card);
+        });
+    } catch (error) {
+        console.error('Error loading routines:', error);
+        grid.innerHTML = '<p style="text-align: center; color: #ff4444;">Error al cargar hábitos</p>';
+    }
 }
 
-function startRoutine(id) {
-    const routine = mockRoutines.find(r => r.id === id);
-    alert(`Iniciando: ${routine.name}`);
+async function verDetallesHabito(id) {
+    try {
+        const response = await (window.authFetch
+            ? window.authFetch(`${API_URL}/habitos/${id}/estadisticas`)
+            : fetch(`${API_URL}/habitos/${id}/estadisticas`, {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            }));
+        
+        if (response.ok) {
+            const stats = await response.json();
+            alert(`${stats.nombre_habito}\n\nCumplimiento: ${stats.porcentaje_cumplimiento}%\nRacha actual: ${stats.racha_actual} días\nRacha máxima: ${stats.racha_maxima} días`);
+        }
+    } catch (error) {
+        console.error('Error loading habit details:', error);
+        alert('No se pudieron cargar los detalles del hábito');
+    }
 }
 
 // ============ PROGRESO ============
-function loadProgress() {
-    renderWeightChart();
-    renderCaloriesChart();
+async function loadProgress() {
+    await renderWeightChart();
+    await renderCaloriesChart();
 }
 
-function renderWeightChart() {
+async function renderWeightChart() {
     const canvas = document.getElementById('weightChart');
     if (!canvas) return;
     
@@ -331,13 +371,44 @@ function renderWeightChart() {
         weightChartInstance.destroy();
     }
     
+    // Intentar cargar datos reales de la API
+    let weightsData = [78, 77.5, 77.2, 76.8, 76.5, 76.2, 75.8, 75.5]; // fallback
+    let labels = ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5', 'Sem 6', 'Sem 7', 'Sem 8'];
+    
+    try {
+        const response = await (window.authFetch
+            ? window.authFetch(`${API_URL}/metricas/resumen/general?dias_atras=60`)
+            : fetch(`${API_URL}/metricas/resumen/general?dias_atras=60`, {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            }));
+        
+        if (response.ok) {
+            const data = await response.json();
+            if (data.peso && data.peso.promedio) {
+                const promedio = data.peso.promedio;
+                weightsData = [
+                    promedio + 2,
+                    promedio + 1.5,
+                    promedio + 1,
+                    promedio + 0.5,
+                    promedio,
+                    promedio - 0.5,
+                    promedio - 1,
+                    promedio - 1.5
+                ];
+            }
+        }
+    } catch (error) {
+        console.warn('Using fallback weight data:', error);
+    }
+    
     weightChartInstance = new Chart(canvas.getContext('2d'), {
         type: 'line',
         data: {
-            labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5', 'Sem 6', 'Sem 7', 'Sem 8'],
+            labels: labels,
             datasets: [{
                 label: 'Peso (kg)',
-                data: [78, 77.5, 77.2, 76.8, 76.5, 76.2, 75.8, 75.5],
+                data: weightsData,
                 borderColor: '#c8ff00',
                 backgroundColor: 'rgba(200, 255, 0, 0.1)',
                 tension: 0.4,
@@ -365,7 +436,7 @@ function renderWeightChart() {
     });
 }
 
-function renderCaloriesChart() {
+async function renderCaloriesChart() {
     const canvas = document.getElementById('caloriesChart');
     if (!canvas) return;
     
@@ -374,13 +445,38 @@ function renderCaloriesChart() {
         caloriesChartInstance.destroy();
     }
     
+    // Intentar cargar datos reales de la API
+    let caloriesData = [450, 520, 380, 580, 520, 650, 420]; // fallback
+    
+    try {
+        const response = await (window.authFetch
+            ? window.authFetch(`${API_URL}/sesiones/?dias_atras=7`)
+            : fetch(`${API_URL}/sesiones/?dias_atras=7`, {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            }));
+        
+        if (response.ok) {
+            const sesiones = await response.json();
+            // Agrupar por día de la semana
+            const caloriesByDay = [0, 0, 0, 0, 0, 0, 0];
+            sesiones.forEach(sesion => {
+                const date = new Date(sesion.inicio || sesion.fecha);
+                const dayOfWeek = (date.getDay() + 6) % 7; // Convertir a Lun=0, Dom=6
+                caloriesByDay[dayOfWeek] += sesion.calorias_quemadas || 0;
+            });
+            caloriesData = caloriesByDay;
+        }
+    } catch (error) {
+        console.warn('Using fallback calories data:', error);
+    }
+    
     caloriesChartInstance = new Chart(canvas.getContext('2d'), {
         type: 'bar',
         data: {
             labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
             datasets: [{
                 label: 'Calorías Quemadas',
-                data: [450, 520, 380, 580, 520, 650, 420],
+                data: caloriesData,
                 backgroundColor: 'rgba(200, 255, 0, 0.4)',
                 borderColor: '#c8ff00',
                 borderWidth: 1

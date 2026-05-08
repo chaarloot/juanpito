@@ -116,7 +116,7 @@ window.showMainApp = showMainApp;
 // Evento: Enviar formulario de login
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const email = document.getElementById('loginEmail').value.trim();
+    const email = document.getElementById('loginEmail').value.trim().toLowerCase();
     const password = document.getElementById('loginPassword').value;
     const submitButton = loginForm.querySelector('button[type="submit"]');
 
@@ -164,7 +164,7 @@ registerForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const nombre = document.getElementById('regName').value.trim();
     const apellidos = document.getElementById('regLastname').value.trim();
-    const email = document.getElementById('regEmail').value.trim();
+    const email = document.getElementById('regEmail').value.trim().toLowerCase();
     const password = document.getElementById('regPassword').value;
     const submitButton = registerForm.querySelector('button[type="submit"]');
 
@@ -205,7 +205,8 @@ registerForm.addEventListener('submit', async (e) => {
         await response.json();
         setAuthMessage(registerMessage, 'Cuenta creada. Ahora puedes iniciar sesión.', 'success');
         registerForm.reset();
-        toggleRegister({ preventDefault: () => {} });
+        loginForm.classList.remove('hidden');
+        registerForm.classList.add('hidden');
     } catch (error) {
         setAuthMessage(registerMessage, error.message || 'No se pudo completar el registro');
         console.error('Register error:', error);

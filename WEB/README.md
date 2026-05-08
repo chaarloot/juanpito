@@ -61,9 +61,7 @@ En la pantalla de login, haz clic en **"Regístrate aquí"** y completa:
 
 ### 4. Inicia Sesión
 
-Usa esta credencial de prueba:
-
-- `juan@test.com` / `Vitalia2026!`
+Usa el email y la contraseña que acabas de registrar.
 
 Si la sesión expira, el frontend intenta renovar el token automáticamente antes de mostrar el login.
 
@@ -164,7 +162,7 @@ En `css/estilos.css`:
 
 ## 📝 Notas
 
-- Los datos se guardan en SQLite (`vitalia.db`)
+- Los datos se guardan en la base de datos configurada en la API
 - Los tokens se guardan en localStorage
 - El frontend muestra mensajes de estado en login y registro
 - El frontend intenta refrescar el token automáticamente si expira

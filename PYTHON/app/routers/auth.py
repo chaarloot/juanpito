@@ -1,5 +1,5 @@
 # routers/auth.py
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
@@ -17,16 +17,22 @@ from app.schemas.schemas import UsuarioCreate, UsuarioOut, Token
 router = APIRouter(prefix="/auth", tags=["Autenticación"])
 
 
+def _normalize_email(email: str) -> str:
+    return email.strip().lower()
+
+
 # ───────────────────────────────────────────────────────────────
 # REGISTRO
 # ───────────────────────────────────────────────────────────────
 @router.post("/register", response_model=UsuarioOut, status_code=201)
 def register(data: UsuarioCreate, db: Session = Depends(get_db)):
-    if db.query(Usuario).filter(Usuario.email == data.email).first():
+    email = _normalize_email(data.email)
+
+    if db.query(Usuario).filter(Usuario.email == email).first():
         raise HTTPException(409, "Ya existe un usuario con ese email")
 
     usuario = Usuario(
-        email=data.email,
+        email=email,
         password_hash=hash_password(data.password),
         nombre=data.nombre,
         apellidos=data.apellidos,
@@ -48,7 +54,8 @@ def register(data: UsuarioCreate, db: Session = Depends(get_db)):
 # ───────────────────────────────────────────────────────────────
 @router.post("/login", response_model=Token)
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    usuario = db.query(Usuario).filter(Usuario.email == form_data.username).first()
+    email = _normalize_email(form_data.username)
+    usuario = db.query(Usuario).filter(Usuario.email == email).first()
 
     if not usuario or not verify_password(form_data.password, usuario.password_hash):
         raise HTTPException(401, "Credenciales incorrectas")

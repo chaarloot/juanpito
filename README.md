@@ -144,7 +144,7 @@ Code
 
 ### Ejecución
 1. Abrir la carpeta `WEB/`  
-2. Abrir `pages/login.html` en el navegador  
+2. Abrir `WEB/index.html` en el navegador  
 
 ---
 
@@ -163,6 +163,7 @@ Code
 # 🧪 Endpoints Principales de la API
 
 - `/auth/login` – Autenticación  
+- `/auth/register` – Registro de usuarios  
 - `/usuarios/` – Gestión de usuarios  
 - `/metricas/` – Registro de métricas  
 - `/habitos/` – Hábitos saludables  

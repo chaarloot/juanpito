@@ -19,12 +19,12 @@
             <form id="loginForm" class="login-form">
                 <div class="form-group">
                     <label for="loginEmail">📧 Email</label>
-                    <input type="email" id="loginEmail" placeholder="tu@email.com" required>
+                    <input type="email" id="loginEmail" placeholder="tu@email.com" autocomplete="email" inputmode="email" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="loginPassword">🔐 Contraseña</label>
-                    <input type="password" id="loginPassword" placeholder="••••••••" required>
+                    <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" required>
                 </div>
 
                 <p id="loginMessage" class="auth-message" aria-live="polite"></p>
@@ -37,22 +37,22 @@
             <form id="registerForm" class="login-form hidden">
                 <div class="form-group">
                     <label for="regName">👤 Nombre</label>
-                    <input type="text" id="regName" placeholder="Juan" required>
+                    <input type="text" id="regName" placeholder="Juan" autocomplete="given-name" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="regLastname">👤 Apellidos</label>
-                    <input type="text" id="regLastname" placeholder="Carlos López" required>
+                    <input type="text" id="regLastname" placeholder="Carlos López" autocomplete="family-name" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="regEmail">📧 Email</label>
-                    <input type="email" id="regEmail" placeholder="tu@email.com" required>
+                    <input type="email" id="regEmail" placeholder="tu@email.com" autocomplete="email" inputmode="email" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="regPassword">🔐 Contraseña</label>
-                    <input type="password" id="regPassword" placeholder="••••••••" required>
+                    <input type="password" id="regPassword" placeholder="••••••••" autocomplete="new-password" required>
                 </div>
 
                 <p id="registerMessage" class="auth-message" aria-live="polite"></p>
