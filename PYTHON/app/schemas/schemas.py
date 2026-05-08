@@ -21,6 +21,27 @@ class UsuarioBase(BaseModel):
     peso_kg: Optional[float] = None
     zona_horaria: Optional[str] = "UTC"
 
+    @field_validator("nombre", "apellidos")
+    @classmethod
+    def nombre_not_empty(cls, v: str) -> str:
+        if not v or len(v.strip()) < 2:
+            raise ValueError("Nombre/apellidos deben tener al menos 2 caracteres")
+        return v.strip()
+
+    @field_validator("altura_cm")
+    @classmethod
+    def altura_valida(cls, v: Optional[float]) -> Optional[float]:
+        if v is not None and not (50 <= v <= 300):
+            raise ValueError("Altura debe estar entre 50 y 300 cm")
+        return v
+
+    @field_validator("peso_kg")
+    @classmethod
+    def peso_valido(cls, v: Optional[float]) -> Optional[float]:
+        if v is not None and not (30 <= v <= 300):
+            raise ValueError("Peso debe estar entre 30 y 300 kg")
+        return v
+
 
 class UsuarioCreate(UsuarioBase):
     password: str
@@ -30,6 +51,12 @@ class UsuarioCreate(UsuarioBase):
     def password_strength(cls, v: str) -> str:
         if len(v) < 8:
             raise ValueError("La contraseña debe tener al menos 8 caracteres")
+        if not re.search(r"[A-Z]", v):
+            raise ValueError("La contraseña debe contener al menos una mayúscula")
+        if not re.search(r"[a-z]", v):
+            raise ValueError("La contraseña debe contener al menos una minúscula")
+        if not re.search(r"[0-9]", v):
+            raise ValueError("La contraseña debe contener al menos un número")
         return v
 
 
@@ -94,6 +121,48 @@ class MetricaSaludBase(BaseModel):
     nivel_estres: Optional[int] = None
     notas: Optional[str] = None
 
+    @field_validator("peso_kg")
+    @classmethod
+    def peso_valido(cls, v: Optional[float]) -> Optional[float]:
+        if v is not None and not (30 <= v <= 300):
+            raise ValueError("Peso debe estar entre 30 y 300 kg")
+        return v
+
+    @field_validator("presion_sistolica", "presion_diastolica")
+    @classmethod
+    def presion_valida(cls, v: Optional[int]) -> Optional[int]:
+        if v is not None and not (40 <= v <= 200):
+            raise ValueError("Presión debe estar entre 40 y 200 mmHg")
+        return v
+
+    @field_validator("ritmo_cardiaco")
+    @classmethod
+    def ritmo_valido(cls, v: Optional[int]) -> Optional[int]:
+        if v is not None and not (30 <= v <= 200):
+            raise ValueError("Ritmo cardíaco debe estar entre 30 y 200 bpm")
+        return v
+
+    @field_validator("glucosa_sangre")
+    @classmethod
+    def glucosa_valida(cls, v: Optional[float]) -> Optional[float]:
+        if v is not None and not (40 <= v <= 500):
+            raise ValueError("Glucosa debe estar entre 40 y 500 mg/dL")
+        return v
+
+    @field_validator("horas_sueno")
+    @classmethod
+    def horas_sueno_valida(cls, v: Optional[int]) -> Optional[int]:
+        if v is not None and not (0 <= v <= 24):
+            raise ValueError("Horas de sueño debe estar entre 0 y 24")
+        return v
+
+    @field_validator("minutos_sueno")
+    @classmethod
+    def minutos_sueno_valida(cls, v: Optional[int]) -> Optional[int]:
+        if v is not None and not (0 <= v <= 59):
+            raise ValueError("Minutos de sueño debe estar entre 0 y 59")
+        return v
+
     @field_validator("nivel_estres")
     @classmethod
     def check_estres(cls, v):
@@ -139,6 +208,20 @@ class HabitoBase(BaseModel):
     unidad: Optional[str] = "veces"
     hora_recordatorio: Optional[time] = None
     activo: Optional[bool] = True
+
+    @field_validator("nombre")
+    @classmethod
+    def nombre_no_vacio(cls, v: str) -> str:
+        if not v or len(v.strip()) < 2:
+            raise ValueError("Nombre del hábito debe tener al menos 2 caracteres")
+        return v.strip()
+
+    @field_validator("objetivo_cantidad")
+    @classmethod
+    def objetivo_valido(cls, v: Optional[int]) -> Optional[int]:
+        if v is not None and v <= 0:
+            raise ValueError("Objetivo cantidad debe ser mayor a 0")
+        return v
 
 
 class HabitoCreate(HabitoBase):
@@ -204,6 +287,36 @@ class SesionEntrenamientoBase(BaseModel):
     nivel_intensidad: Optional[int] = None
     notas: Optional[str] = None
 
+    @field_validator("tipo_entrenamiento")
+    @classmethod
+    def tipo_no_vacio(cls, v: str) -> str:
+        if not v or len(v.strip()) < 2:
+            raise ValueError("Tipo de entrenamiento debe tener al menos 2 caracteres")
+        return v.strip()
+
+    @field_validator("duracion_minutos")
+    @classmethod
+    def duracion_valida(cls, v: Optional[int]) -> Optional[int]:
+        if v is not None and v <= 0:
+            raise ValueError("Duración debe ser mayor a 0 minutos")
+        if v is not None and v > 1440:  # 24 horas
+            raise ValueError("Duración no puede exceder 1440 minutos (24 horas)")
+        return v
+
+    @field_validator("calorias_quemadas")
+    @classmethod
+    def calorias_validas(cls, v: Optional[int]) -> Optional[int]:
+        if v is not None and v < 0:
+            raise ValueError("Calorías no puede ser negativa")
+        return v
+
+    @field_validator("ritmo_promedio")
+    @classmethod
+    def ritmo_valido(cls, v: Optional[int]) -> Optional[int]:
+        if v is not None and not (30 <= v <= 200):
+            raise ValueError("Ritmo promedio debe estar entre 30 y 200 bpm")
+        return v
+
     @field_validator("nivel_intensidad")
     @classmethod
     def check_intensidad(cls, v):
@@ -254,6 +367,19 @@ class MedicacionBase(BaseModel):
     instrucciones: Optional[str] = None
     activo: Optional[bool] = True
 
+    @field_validator("nombre_medicacion")
+    @classmethod
+    def nombre_no_vacio(cls, v: str) -> str:
+        if not v or len(v.strip()) < 2:
+            raise ValueError("Nombre de medicación debe tener al menos 2 caracteres")
+        return v.strip()
+
+    @model_validator(mode="after")
+    def fecha_fin_valida(self):
+        if self.fecha_fin and self.fecha_fin < self.fecha_inicio:
+            raise ValueError("Fecha fin debe ser igual o posterior a fecha inicio")
+        return self
+
 
 class MedicacionCreate(MedicacionBase):
     pass
@@ -296,6 +422,19 @@ class PlanBase(BaseModel):
     fecha_fin: Optional[date] = None
     estado: Optional[EstadoPlan] = "borrador"
     entrenador_id: Optional[int] = None
+
+    @field_validator("nombre_plan")
+    @classmethod
+    def nombre_no_vacio(cls, v: str) -> str:
+        if not v or len(v.strip()) < 2:
+            raise ValueError("Nombre del plan debe tener al menos 2 caracteres")
+        return v.strip()
+
+    @model_validator(mode="after")
+    def fecha_fin_valida(self):
+        if self.fecha_fin and self.fecha_fin < self.fecha_inicio:
+            raise ValueError("Fecha fin debe ser igual o posterior a fecha inicio")
+        return self
 
 
 class PlanCreate(PlanBase):
@@ -366,6 +505,13 @@ class AlertaBase(BaseModel):
     mensaje: Optional[str] = None
     prioridad: Optional[Prioridad] = "media"
     programada_para: Optional[datetime] = None
+
+    @field_validator("titulo")
+    @classmethod
+    def titulo_no_vacio(cls, v: str) -> str:
+        if not v or len(v.strip()) < 2:
+            raise ValueError("Título de alerta debe tener al menos 2 caracteres")
+        return v.strip()
 
 
 class AlertaCreate(AlertaBase):

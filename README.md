@@ -110,6 +110,33 @@ Code
 
 ---
 
+## 🧪 Tests (Unittest)
+
+### Instalar dependencias de test
+pip install -r requirements-test.txt
+
+Code
+
+### Ejecutar todos los tests
+pytest tests/ -v
+
+Code
+
+### Tests disponibles
+- ✅ **test_auth.py** – Autenticación, registro, login
+- ✅ **test_schemas.py** – Validaciones de datos (altura, peso, contraseña, etc)
+- ✅ **test_endpoints.py** – CRUD de usuarios, métricas, sesiones, hábitos
+
+### Cobertura de tests
+Para generar reporte de cobertura:
+```bash
+pytest tests/ --cov=app --cov-report=html
+```
+
+Para más detalles, ver [PYTHON/tests/README.md](PYTHON/tests/README.md)
+
+---
+
 ## 🟩 2. Aplicación Android
 
 ### Requisitos
