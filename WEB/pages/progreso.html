@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progreso — Vitalia JC</title>
+    <link rel="stylesheet" href="../css/estilos.css">
+    <link rel="stylesheet" href="../css/app-extra.css">
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+        <div class="page active">
+            <div class="page-header">
+                <h1>MI PROGRESO</h1>
+                <button id="btnNewMetric" class="btn-primary">+ Registrar Métrica</button>
+            </div>
+            <div id="metricsSummary"></div>
+            <div class="progress-container">
+                <div class="progress-chart">
+                    <div class="chart-header"><h3>EVOLUCIÓN DEL PESO</h3></div>
+                    <div style="height:240px;position:relative">
+                        <canvas id="weightChart"></canvas>
+                    </div>
+                </div>
+                <div class="progress-chart">
+                    <div class="chart-header"><h3>CALORÍAS SEMANALES</h3></div>
+                    <div style="height:240px;position:relative">
+                        <canvas id="caloriesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="../js/shared.js"></script>
+<script src="../js/progreso.js"></script>
+</body>
+</html>

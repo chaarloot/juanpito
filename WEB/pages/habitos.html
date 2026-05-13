@@ -1,0 +1,38 @@
+    <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Hábitos — Vitalia JC</title>
+    <link rel="stylesheet" href="../css/estilos.css">
+    <link rel="stylesheet" href="../css/app-extra.css">
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+        <div class="page active">
+            <div class="page-header">
+                <div>
+                    <h1>MIS HÁBITOS</h1>
+                    <div class="page-subtitle">
+                        <span><strong id="totalHabitos">—</strong> hábitos</span>
+                        <span style="color:#c8ff00"><strong id="habitosActivos">—</strong> activos</span>
+                        <span style="color:#ffaa00"><strong id="habitosRiesgo">—</strong> en riesgo</span>
+                    </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:16px">
+                    <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#a0a0a0;cursor:pointer">
+                        <input type="checkbox" id="btnSoloActivos"> Solo activos
+                    </label>
+                    <button id="btnNuevoHabito" class="btn-primary">+ Nuevo Hábito</button>
+                </div>
+            </div>
+            <div id="habitosGrid" class="routines-grid"></div>
+        </div>
+    </main>
+</div>
+<script src="../js/shared.js"></script>
+<script src="../js/habitos.js"></script>
+</body>
+</html>

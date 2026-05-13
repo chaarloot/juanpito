@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicación — Vitalia JC</title>
+    <link rel="stylesheet" href="../css/estilos.css">
+    <link rel="stylesheet" href="../css/app-extra.css">
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+        <div class="page active">
+            <div class="page-header">
+                <div>
+                    <h1>MEDICACIÓN</h1>
+                    <div class="page-subtitle">
+                        <span><strong id="totalMeds">—</strong> total</span>
+                        <span style="color:#c8ff00"><strong id="medsActivas">—</strong> activas</span>
+                        <label style="color:#a0a0a0;font-size:13px;margin-left:8px">Filtro:
+                            <select id="filtroMed" class="inline-select">
+                                <option value="todas">Todas</option>
+                                <option value="activas">Activas</option>
+                                <option value="inactivas">Inactivas</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+                <button id="btnNewMed" class="btn-primary">+ Nueva Medicación</button>
+            </div>
+            <div id="medicacionList" class="history-list"></div>
+        </div>
+    </main>
+</div>
+<script src="../js/shared.js"></script>
+<script src="../js/medicacion.js"></script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — Vitalia JC</title>
+    <link rel="stylesheet" href="../css/estilos.css">
+    <link rel="stylesheet" href="../css/app-extra.css">
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+        <div class="page active">
+
+            <div class="dashboard-header">
+                <div class="header-title">
+                    <h1>MI PANEL</h1>
+                    <p id="weekInfo">Cargando semana…</p>
+                </div>
+                <button class="btn-new-training" id="btnNewWorkout">+ Nuevo Entrenamiento</button>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card yellow">
+                    <div class="stat-label">ENTRENAMIENTOS</div>
+                    <div class="stat-value" id="trainingSessions">—</div>
+                    <div class="stat-change">Últimos 30 días</div>
+                    <div class="stat-bar"></div>
+                </div>
+                <div class="stat-card red">
+                    <div class="stat-label">CALORÍAS QUEMADAS</div>
+                    <div class="stat-value" id="caloriesBurned">—</div>
+                    <div class="stat-change">Últimos 30 días</div>
+                    <div class="stat-bar"></div>
+                </div>
+                <div class="stat-card blue">
+                    <div class="stat-label">MINUTOS ACTIVOS</div>
+                    <div class="stat-value" id="activeMinutes">—</div>
+                    <div class="stat-change">Últimos 30 días</div>
+                    <div class="stat-bar"></div>
+                </div>
+                <div class="stat-card green">
+                    <div class="stat-label">RACHA ACTUAL</div>
+                    <div class="stat-value" id="streakDays">—</div>
+                    <div class="stat-change">días consecutivos</div>
+                    <div class="stat-bar"></div>
+                </div>
+            </div>
+
+            <div class="content-grid">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>ACTIVIDAD SEMANAL</h3>
+                        <span class="badge-active">Esta semana</span>
+                    </div>
+                    <div class="chart-area">
+                        <canvas id="weeklyChart"></canvas>
+                    </div>
+                </div>
+                <div class="streak-container">
+                    <div class="chart-header">
+                        <h3>RACHA ACTUAL</h3>
+                        <span class="badge-active" id="streakBadge">Activa</span>
+                    </div>
+                    <div class="streak-circle" id="streakCircle">
+                        <div class="streak-number" id="streakNum">—</div>
+                        <div class="streak-label">DÍAS</div>
+                    </div>
+                    <div class="streak-info">
+                        <p id="streakMsg"><span class="percentage">Cargando…</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="exercises-container">
+                <div class="exercises-header">
+                    <h3>ÚLTIMAS SESIONES</h3>
+                    <a href="historial.html" class="badge-active" style="text-decoration:none;font-size:12px">Ver todo →</a>
+                </div>
+                <div id="recentSessions">
+                    <p style="color:#888;text-align:center;padding:30px">Cargando sesiones…</p>
+                </div>
+            </div>
+
+            <div class="quick-access-grid" style="margin-top:24px">
+                <a href="habitos.html"    class="quick-card"><span>📋</span>Mis Hábitos</a>
+                <a href="metricas.html"   class="quick-card"><span>📏</span>Métricas</a>
+                <a href="medicacion.html" class="quick-card"><span>💊</span>Medicación</a>
+                <a href="progreso.html"   class="quick-card"><span>📊</span>Progreso</a>
+                <a href="calendario.html" class="quick-card"><span>📅</span>Calendario</a>
+                <a href="ejercicios.html" class="quick-card"><span>💪</span>Ejercicios</a>
+            </div>
+
+        </div>
+    </main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="../js/shared.js"></script>
+<script src="../js/dashboard.js"></script>
+</body>
+</html>

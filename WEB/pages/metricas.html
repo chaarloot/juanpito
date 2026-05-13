@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Métricas — Vitalia JC</title>
+    <link rel="stylesheet" href="../css/estilos.css">
+    <link rel="stylesheet" href="../css/app-extra.css">
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+        <div class="page active">
+            <div class="page-header">
+                <div>
+                    <h1>MÉTRICAS DE SALUD</h1>
+                    <div class="page-subtitle">
+                        <label style="color:#a0a0a0;font-size:13px">Periodo:
+                            <select id="filtroMetricas" class="inline-select">
+                                <option value="7">Últimos 7 días</option>
+                                <option value="30" selected>Últimos 30 días</option>
+                                <option value="90">Últimos 90 días</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+                <button id="btnNewMetric" class="btn-primary">+ Registrar Métrica</button>
+            </div>
+            <div id="resumenCards"></div>
+            <div id="metricasList" class="history-list"></div>
+        </div>
+    </main>
+</div>
+<script src="../js/shared.js"></script>
+<script src="../js/metricas.js"></script>
+</body>
+</html>

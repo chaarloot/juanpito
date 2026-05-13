@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estadísticas — Vitalia JC</title>
+    <link rel="stylesheet" href="../css/estilos.css">
+    <link rel="stylesheet" href="../css/app-extra.css">
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+        <div class="page active">
+            <div class="page-header">
+                <h1>ESTADÍSTICAS</h1>
+                <label style="color:#a0a0a0;font-size:13px">Periodo:
+                    <select id="filtroDias" class="inline-select">
+                        <option value="7">7 días</option>
+                        <option value="30" selected>30 días</option>
+                        <option value="90">90 días</option>
+                        <option value="365">1 año</option>
+                    </select>
+                </label>
+            </div>
+            <div class="stats-grid" style="margin-bottom:28px">
+                <div class="stat-card yellow">
+                    <div class="stat-label">TOTAL SESIONES</div>
+                    <div class="stat-value" id="statTotal">—</div>
+                </div>
+                <div class="stat-card red">
+                    <div class="stat-label">CALORÍAS</div>
+                    <div class="stat-value" id="statCalorias">—</div>
+                </div>
+                <div class="stat-card blue">
+                    <div class="stat-label">MINUTOS</div>
+                    <div class="stat-value" id="statMinutos">—</div>
+                </div>
+                <div class="stat-card green">
+                    <div class="stat-label">MEDIA SEMANAL</div>
+                    <div class="stat-value" id="statSemanal">—</div>
+                </div>
+            </div>
+            <div class="progress-container">
+                <div class="progress-chart">
+                    <div class="chart-header"><h3>TIPO DE ENTRENAMIENTO</h3></div>
+                    <div style="height:260px;position:relative">
+                        <canvas id="tipoChart"></canvas>
+                    </div>
+                </div>
+                <div class="progress-chart">
+                    <div class="chart-header"><h3>DISTRIBUCIÓN DE INTENSIDAD</h3></div>
+                    <div style="height:260px;position:relative">
+                        <canvas id="intensidadChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="progress-chart" style="margin-top:24px">
+                <div class="chart-header"><h3>EVOLUCIÓN SEMANAL</h3></div>
+                <div style="height:280px;position:relative">
+                    <canvas id="semanalChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="../js/shared.js"></script>
+<script src="../js/estadisticas.js"></script>
+</body>
+</html>

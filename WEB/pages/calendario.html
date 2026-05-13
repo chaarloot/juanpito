@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario — Vitalia JC</title>
+    <link rel="stylesheet" href="../css/estilos.css">
+    <link rel="stylesheet" href="../css/app-extra.css">
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+        <div class="page active">
+            <div class="page-header">
+                <h1>CALENDARIO</h1>
+                <div class="calendar-nav">
+                    <button id="btnPrevMonth" class="btn-secondary">← Anterior</button>
+                    <span id="calendarTitle" style="font-size:18px;font-weight:700;color:#c8ff00;min-width:180px;text-align:center"></span>
+                    <button id="btnNextMonth" class="btn-secondary">Siguiente →</button>
+                </div>
+            </div>
+            <div class="calendar-stats-row" style="display:flex;gap:16px;margin-bottom:24px;flex-wrap:wrap">
+                <div class="stat-mini">
+                    <span>Días entrenados</span>
+                    <strong id="monthSessions">—</strong>
+                </div>
+                <div class="stat-mini">
+                    <span>Calorías quemadas</span>
+                    <strong id="monthCalories">—</strong>
+                </div>
+                <div class="stat-mini">
+                    <span>Minutos activos</span>
+                    <strong id="monthMinutes">—</strong>
+                </div>
+            </div>
+            <div class="calendar-container">
+                <div id="calendarGrid" class="calendar-grid"></div>
+            </div>
+        </div>
+    </main>
+</div>
+<script src="../js/shared.js"></script>
+<script src="../js/calendario.js"></script>
+</body>
+</html>

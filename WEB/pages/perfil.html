@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil — Vitalia JC</title>
+    <link rel="stylesheet" href="../css/estilos.css">
+    <link rel="stylesheet" href="../css/app-extra.css">
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+        <div class="page active">
+            <div class="page-header"><h1>MI PERFIL</h1></div>
+            <div class="perfil-layout">
+
+                <!-- COLUMNA IZQUIERDA -->
+                <div class="perfil-sidebar">
+                    <div class="perfil-avatar-card">
+                        <div class="perfil-avatar" id="profileAvatar">JC</div>
+                        <div id="profileName"  style="font-size:18px;font-weight:700;margin-top:12px">—</div>
+                        <div id="profileEmail" style="color:#a0a0a0;font-size:13px;margin-top:4px">—</div>
+                        <div id="profileRol"   style="margin-top:8px;padding:4px 12px;background:rgba(200,255,0,0.12);border-radius:999px;font-size:12px;font-weight:600;color:#c8ff00;display:inline-block">—</div>
+                        <div style="color:#888;font-size:12px;margin-top:8px">Miembro desde <span id="profileSince">—</span></div>
+                    </div>
+                    <div class="perfil-stats-card">
+                        <h3 style="font-size:13px;letter-spacing:1px;color:#a0a0a0;margin-bottom:16px">RESUMEN ANUAL</h3>
+                        <div class="perfil-stat-row"><span>Sesiones totales</span><strong id="profileTotalSessions">—</strong></div>
+                        <div class="perfil-stat-row"><span>Calorías quemadas</span><strong id="profileTotalCal">—</strong></div>
+                        <div class="perfil-stat-row"><span>Minutos activos</span><strong id="profileTotalMin">—</strong></div>
+                        <div class="perfil-stat-row"><span>Hábitos activos</span><strong id="profileHabitosActivos">—</strong></div>
+                        <div class="perfil-stat-row"><span>Total hábitos</span><strong id="profileHabitos">—</strong></div>
+                    </div>
+                </div>
+
+                <!-- COLUMNA DERECHA -->
+                <div class="perfil-forms">
+                    <!-- Datos personales -->
+                    <div class="perfil-section">
+                        <h2>Datos Personales</h2>
+                        <form id="profileForm">
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+                                <div class="form-group">
+                                    <label>Nombre</label>
+                                    <input id="pNombre" type="text" placeholder="Juan">
+                                </div>
+                                <div class="form-group">
+                                    <label>Apellidos</label>
+                                    <input id="pApellidos" type="text" placeholder="García">
+                                </div>
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input id="pEmail" type="email" disabled style="opacity:.5;cursor:not-allowed">
+                                </div>
+                                <div class="form-group">
+                                    <label>Fecha de nacimiento</label>
+                                    <input id="pFechaNac" type="date">
+                                </div>
+                                <div class="form-group">
+                                    <label>Género</label>
+                                    <select id="pGenero" class="modal-select">
+                                        <option value="">Sin especificar</option>
+                                        <option value="hombre">Hombre</option>
+                                        <option value="mujer">Mujer</option>
+                                        <option value="otro">Otro</option>
+                                        <option value="prefiero_no_decirlo">Prefiero no decirlo</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Zona horaria</label>
+                                    <input id="pZona" type="text" placeholder="UTC">
+                                </div>
+                                <div class="form-group">
+                                    <label>Altura (cm)</label>
+                                    <input id="pAltura" type="number" step="0.1" placeholder="175">
+                                </div>
+                                <div class="form-group">
+                                    <label>Peso (kg)</label>
+                                    <input id="pPeso" type="number" step="0.1" placeholder="75">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-primary" style="margin-top:20px;padding:12px 32px">
+                                Guardar cambios
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Cambiar contraseña -->
+                    <div class="perfil-section">
+                        <h2>Cambiar Contraseña</h2>
+                        <form id="passwordForm">
+                            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
+                                <div class="form-group">
+                                    <label>Contraseña actual</label>
+                                    <input id="pwActual" type="password" placeholder="••••••••">
+                                </div>
+                                <div class="form-group">
+                                    <label>Nueva contraseña</label>
+                                    <input id="pwNueva" type="password" placeholder="••••••••">
+                                </div>
+                                <div class="form-group">
+                                    <label>Confirmar</label>
+                                    <input id="pwConfirm" type="password" placeholder="••••••••">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-secondary" style="margin-top:20px;padding:12px 32px">
+                                Cambiar contraseña
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Zona peligrosa -->
+                    <div class="perfil-section danger-zone">
+                        <h2 style="color:#ff4444">Zona Peligrosa</h2>
+                        <p style="color:#a0a0a0;margin-bottom:16px">
+                            Estas acciones son irreversibles. Procede con precaución.
+                        </p>
+                        <button class="btn-secondary" style="border-color:#ff4444;color:#ff4444"
+                            onclick="confirmDeleteAccount()">
+                            🗑 Eliminar cuenta
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+</div>
+<script src="../js/shared.js"></script>
+<script src="../js/perfil.js"></script>
+</body>
+</html>

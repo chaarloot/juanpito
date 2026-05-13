@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     # Base de datos
-    DATABASE_URL: str = "mysql+pymysql://root:password@localhost:3306/VitaliaCJ"
+    DATABASE_URL: str = "mysql+pymysql://root:@localhost:3306/VitaliaCJ"
 
     # JWT
     SECRET_KEY: str = "cambia_esto_en_produccion"

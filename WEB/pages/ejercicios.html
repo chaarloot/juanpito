@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicios — Vitalia JC</title>
+    <link rel="stylesheet" href="../css/estilos.css">
+    <link rel="stylesheet" href="../css/app-extra.css">
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+        <div class="page active">
+            <div class="page-header">
+                <div>
+                    <h1>EJERCICIOS</h1>
+                    <div class="page-subtitle">
+                        <span id="exCount">—</span> ejercicios encontrados
+                    </div>
+                </div>
+                <input type="text" id="exSearch" placeholder="🔍 Buscar ejercicio…" class="search-input">
+            </div>
+            <div style="margin-bottom:20px">
+                <div style="font-size:12px;color:#a0a0a0;margin-bottom:8px;font-weight:600;letter-spacing:1px">GRUPO MUSCULAR</div>
+                <div id="filtroGrupo" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px"></div>
+                <div style="font-size:12px;color:#a0a0a0;margin-bottom:8px;font-weight:600;letter-spacing:1px">DIFICULTAD</div>
+                <div id="filtroDif" style="display:flex;gap:8px"></div>
+            </div>
+            <div id="ejerciciosGrid" class="ejercicios-grid"></div>
+        </div>
+    </main>
+</div>
+<script src="../js/shared.js"></script>
+<script src="../js/ejercicios.js"></script>
+</body>
+</html>
