@@ -20,13 +20,25 @@ const EJERCICIOS = [
     { id:15, name:'Face Pull',              grupo:'Hombros',  series:'3×15',  peso:'25 kg',    dif:'Básico',     desc:'Salud de hombros y deltoides posteriores. Imprescindible para compensar el press.' },
     { id:16, name:'Fondos en Paralelas',    grupo:'Pecho',    series:'3×10',  peso:'Corporal', dif:'Intermedio', desc:'Pecho inferior y tríceps. Inclínate hacia adelante para enfatizar pecho.' },
     { id:17, name:'Elevaciones Laterales',  grupo:'Hombros',  series:'4×15',  peso:'10 kg',    dif:'Básico',     desc:'Amplitud de hombros. Sube hasta la altura del hombro, no más.' },
-    { id:18, name:'Prensa de Pantorrillas', grupo:'Piernas',  series:'4×20',  peso:'80 kg',    dif:'Básico',     desc:'Trabaja gemelos con alto volumen. Rango completo de movimiento.' },
+    { id:18, name:'Gemelos de Pie',         grupo:'Piernas',  series:'4×20',  peso:'80 kg',    dif:'Básico',     desc:'Trabaja gemelos con alto volumen. Rango completo de movimiento.' },
     { id:19, name:'Crunch Abdominal',       grupo:'Core',     series:'3×20',  peso:'Corporal', dif:'Básico',     desc:'Básico para abdominales. No lleves el cuello, contrae el abdomen.' },
     { id:20, name:'Jalón al Pecho',         grupo:'Espalda',  series:'4×10',  peso:'70 kg',    dif:'Básico',     desc:'Alternativa a dominadas. Tira hacia el pecho, no hacia la nuca.' },
+    { id:21, name:'Abducción de Cadera',    grupo:'Glúteos',  series:'4×15',  peso:'20 kg',    dif:'Básico',     desc:'Trabaja glúteo medio. Puedes hacerlo con máquina o goma elástica.' },
+    { id:22, name:'Peso Muerto Rumano',     grupo:'Piernas',  series:'4×10',  peso:'70 kg',    dif:'Intermedio', desc:'Isquiotibiales y glúteos. Mantén las piernas casi rectas y espalda neutra.' },
+    { id:23, name:'Press Inclinado',        grupo:'Pecho',    series:'4×10',  peso:'70 kg',    dif:'Intermedio', desc:'Trabaja la parte superior del pecho. Banco a 30-45 grados.' },
+    { id:24, name:'Remo en Polea',          grupo:'Espalda',  series:'3×12',  peso:'60 kg',    dif:'Básico',     desc:'Espalda media con tensión constante. Codos pegados al cuerpo.' },
+    { id:25, name:'Sentadilla Búlgara',     grupo:'Piernas',  series:'3×10',  peso:'30 kg',    dif:'Avanzado',   desc:'Sentadilla unilateral con pie trasero elevado. Máxima activación de glúteo.' },
 ];
 
 const GRUPOS = ['Todos','Pecho','Espalda','Piernas','Brazos','Hombros','Glúteos','Core'];
 const DIFS   = ['Todas','Básico','Intermedio','Avanzado'];
+
+// Función para normalizar texto — quita acentos y pasa a minúsculas
+function normalizar(str) {
+    return str.toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     initPage('ejercicios');
@@ -38,7 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
 function renderFiltros() {
     const grupoWrap = document.getElementById('filtroGrupo');
     const difWrap   = document.getElementById('filtroDif');
-
     if (grupoWrap) {
         grupoWrap.innerHTML = GRUPOS.map(g =>
             `<button class="filter-chip ${g==='Todos'?'active':''}" data-grupo="${g}" onclick="setFiltroGrupo('${g}')">${g}</button>`
@@ -55,23 +66,25 @@ function setFiltroGrupo(g) {
     document.querySelectorAll('[data-grupo]').forEach(b => b.classList.toggle('active', b.dataset.grupo === g));
     renderEjercicios();
 }
+
 function setFiltroDif(d) {
     document.querySelectorAll('[data-dif]').forEach(b => b.classList.toggle('active', b.dataset.dif === d));
     renderEjercicios();
 }
 
 function renderEjercicios() {
-    const grid    = document.getElementById('ejerciciosGrid');
+    const grid = document.getElementById('ejerciciosGrid');
     if (!grid) return;
 
-    const q     = (document.getElementById('exSearch')?.value || '').toLowerCase();
+    // Normalizar la búsqueda (sin acentos, minúsculas)
+    const q     = normalizar(document.getElementById('exSearch')?.value || '');
     const grupo = document.querySelector('[data-grupo].active')?.dataset.grupo || 'Todos';
-    const dif   = document.querySelector('[data-dif].active')?.dataset.dif     || 'Todas';
+    const dif   = document.querySelector('[data-dif].active')?.dataset.dif   || 'Todas';
 
     const filtered = EJERCICIOS.filter(e =>
         (grupo === 'Todos' || e.grupo === grupo) &&
         (dif   === 'Todas' || e.dif   === dif)   &&
-        (!q || e.name.toLowerCase().includes(q) || e.grupo.toLowerCase().includes(q))
+        (!q || normalizar(e.name).includes(q) || normalizar(e.grupo).includes(q) || normalizar(e.desc).includes(q))
     );
 
     setEl('exCount', filtered.length);
@@ -81,13 +94,13 @@ function renderEjercicios() {
         return;
     }
 
-    const difColor = { Básico: '#4da6ff', Intermedio: '#c8ff00', Avanzado: '#ff4444' };
+    const difColor = { 'Básico': '#4da6ff', 'Intermedio': '#c8ff00', 'Avanzado': '#ff4444' };
 
     grid.innerHTML = filtered.map(e => `
         <div class="ejercicio-card">
             <div class="ejercicio-header">
                 <span class="ejercicio-grupo">${e.grupo}</span>
-                <span class="ejercicio-dif" style="color:${difColor[e.dif]}">${e.dif}</span>
+                <span class="ejercicio-dif" style="color:${difColor[e.dif]||'#fff'}">${e.dif}</span>
             </div>
             <div class="ejercicio-name">${e.name}</div>
             <div class="ejercicio-meta">

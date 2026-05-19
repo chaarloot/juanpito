@@ -15,7 +15,6 @@ async function loadPerfil() {
         if (!res.ok) throw new Error();
         const u = await res.json();
 
-        // Rellenar formulario
         setInput('pNombre',   u.nombre);
         setInput('pApellidos', u.apellidos);
         setInput('pEmail',    u.email);
@@ -24,17 +23,12 @@ async function loadPerfil() {
         setInput('pPeso',     u.peso_kg   || '');
         setInput('pZona',     u.zona_horaria || 'UTC');
 
-        // Género
         const generoEl = document.getElementById('pGenero');
         if (generoEl && u.genero) generoEl.value = u.genero;
 
-        // Avatar
         const avatar = document.getElementById('profileAvatar');
-        if (avatar) {
-            avatar.textContent = (u.nombre[0] + u.apellidos[0]).toUpperCase();
-        }
+        if (avatar) avatar.textContent = (u.nombre[0] + u.apellidos[0]).toUpperCase();
 
-        // Info sidebar
         setEl('profileName',  `${u.nombre} ${u.apellidos}`);
         setEl('profileEmail', u.email);
         setEl('profileRol',   capitalize(u.rol));
@@ -42,18 +36,15 @@ async function loadPerfil() {
 
     } catch (_) { showToast('Error al cargar el perfil', 'error'); }
 
-    // Estadísticas del usuario
     loadProfileStats();
 }
 
 async function loadProfileStats() {
     try {
-        const [resSesiones, resHabitos, resMetricas] = await Promise.all([
+        const [resSesiones, resHabitos] = await Promise.all([
             authFetch(`${API_URL}/sesiones/stats/resumen?dias_atras=365`),
             authFetch(`${API_URL}/habitos/resumen/todos`),
-            authFetch(`${API_URL}/metricas/?limit=1`),
         ]);
-
         if (resSesiones.ok) {
             const d = await resSesiones.json();
             setEl('profileTotalSessions', d.total_entrenamientos || 0);
@@ -62,7 +53,7 @@ async function loadProfileStats() {
         }
         if (resHabitos.ok) {
             const h = await resHabitos.json();
-            setEl('profileHabitos', h.length);
+            setEl('profileHabitos',        h.length);
             setEl('profileHabitosActivos', h.filter(x => x.estado === 'activo').length);
         }
     } catch (_) {}
@@ -93,18 +84,53 @@ async function savePerfil(e) {
 
 async function changePassword(e) {
     e.preventDefault();
-    const current  = document.getElementById('pwActual')?.value;
-    const newPw    = document.getElementById('pwNueva')?.value;
-    const confirm  = document.getElementById('pwConfirm')?.value;
+    const current = document.getElementById('pwActual')?.value;
+    const newPw   = document.getElementById('pwNueva')?.value;
+    const confirm = document.getElementById('pwConfirm')?.value;
 
-    if (!current || !newPw) { showToast('Rellena todos los campos', 'error'); return; }
-    if (newPw !== confirm)  { showToast('Las contraseñas no coinciden', 'error'); return; }
-    if (newPw.length < 6)   { showToast('Mínimo 6 caracteres', 'error'); return; }
+    if (!current || !newPw || !confirm) {
+        showToast('Rellena todos los campos', 'error'); return;
+    }
+    if (newPw !== confirm) {
+        showToast('Las contraseñas no coinciden', 'error'); return;
+    }
+    if (newPw.length < 6) {
+        showToast('Mínimo 6 caracteres', 'error'); return;
+    }
 
-    // El backend no tiene endpoint de cambio de contraseña con verificación,
-    // usamos el PUT /usuarios/me con password_hash (si el schema lo permite)
-    // Por ahora mostramos aviso informativo
-    showToast('Función disponible próximamente', 'error');
+    // Verificar contraseña actual haciendo login
+    try {
+        const email = document.getElementById('pEmail')?.value;
+        const checkRes = await fetch(`${API_URL}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `username=${encodeURIComponent(email)}&password=${encodeURIComponent(current)}`
+        });
+
+        if (!checkRes.ok) {
+            showToast('La contraseña actual es incorrecta', 'error');
+            return;
+        }
+
+        // Contraseña actual correcta → actualizar con la nueva
+        // El endpoint PUT /usuarios/me acepta password en el body
+        const updateRes = await authFetch(`${API_URL}/usuarios/me`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: newPw })
+        });
+
+        if (updateRes.ok) {
+            showToast('✓ Contraseña cambiada correctamente');
+            document.getElementById('passwordForm')?.reset();
+        } else {
+            const d = await updateRes.json().catch(() => ({}));
+            showToast(d.detail || 'Error al cambiar la contraseña', 'error');
+        }
+
+    } catch (_) {
+        showToast('Error de conexión', 'error');
+    }
 }
 
 function confirmDeleteAccount() {
@@ -115,7 +141,7 @@ function confirmDeleteAccount() {
         <div class="modal-content" style="max-width:400px;text-align:center">
             <div style="font-size:48px;margin-bottom:16px">⚠️</div>
             <h2 style="color:#ff4444;margin-bottom:12px">Eliminar cuenta</h2>
-            <p style="color:#a0a0a0;margin-bottom:24px">Esta acción es <strong style="color:#ff4444">irreversible</strong>. Se eliminarán todos tus datos, sesiones, hábitos y métricas.</p>
+            <p style="color:#a0a0a0;margin-bottom:24px">Esta acción es <strong style="color:#ff4444">irreversible</strong>. Se eliminarán todos tus datos.</p>
             <p style="color:#a0a0a0;margin-bottom:20px">Escribe <strong style="color:#fff">ELIMINAR</strong> para confirmar:</p>
             <input id="deleteConfirmInput" type="text" placeholder="ELIMINAR" style="width:100%;margin-bottom:16px">
             <div style="display:flex;gap:10px">

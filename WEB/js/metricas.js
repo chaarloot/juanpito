@@ -16,26 +16,37 @@ async function loadMetricas() {
 
     const dias = parseInt(document.getElementById('filtroMetricas')?.value) || 30;
 
+    // 1. Intentar cargar el resumen (Aislado para que no rompa la lista si falla)
     try {
-        const [resMetricas, resResumen] = await Promise.all([
-            authFetch(`${API_URL}/metricas/?limit=50`),
-            authFetch(`${API_URL}/metricas/resumen/general?dias_atras=${dias}`)
-        ]);
-
-        // Resumen cards
+        const resResumen = await authFetch(`${API_URL}/metricas/resumen/general?dias_atras=${dias}`);
         if (resResumen.ok) {
             const d = await resResumen.json();
             renderResumenCards(d);
+        } else {
+            console.warn('El resumen de métricas no pudo calcularse o no devolvió un estado correcto.');
+            const container = document.getElementById('resumenCards');
+            if (container) container.innerHTML = '';
+        }
+    } catch (err) {
+        console.error('Error al cargar el resumen general:', err);
+    }
+
+    // 2. Cargar el listado principal de métricas individuales
+    try {
+        const resMetricas = await authFetch(`${API_URL}/metricas/?limit=100`);
+
+        if (!resMetricas.ok) {
+            list.innerHTML = '<p style="color:#ff4444;text-align:center;padding:40px">Error al cargar métricas</p>';
+            return;
         }
 
-        if (!resMetricas.ok) throw new Error();
         const metricas = await resMetricas.json();
-
         list.innerHTML = '';
+
         if (!metricas.length) {
             list.innerHTML = `<div class="empty-state">
                 <div class="empty-icon">📏</div>
-                <p>Sin métricas registradas</p>
+                <p>Sin métricas registradas aún</p>
                 <button class="btn-primary" onclick="showNewMetricModal()" style="margin-top:16px">+ Registrar primera métrica</button>
             </div>`;
             return;
@@ -46,21 +57,23 @@ async function loadMetricas() {
             el.className = 'metric-row-card';
             el.innerHTML = `
                 <div class="metric-row-date">
-                    ${new Date(m.fecha_metrica).toLocaleDateString('es-ES', { weekday:'short', day:'numeric', month:'short', year:'numeric' })}
+                    ${new Date(m.fecha_metrica + 'T12:00:00').toLocaleDateString('es-ES', { weekday:'short', day:'numeric', month:'long', year:'numeric' })}
                 </div>
                 <div class="metric-row-values">
-                    ${m.peso_kg           ? `<span class="metric-pill">⚖️ ${m.peso_kg} kg</span>`              : ''}
-                    ${m.ritmo_cardiaco    ? `<span class="metric-pill">❤️ ${m.ritmo_cardiaco} bpm</span>`       : ''}
-                    ${m.presion_sistolica ? `<span class="metric-pill">🩺 ${m.presion_sistolica}/${m.presion_diastolica}</span>` : ''}
-                    ${m.horas_sueno != null ? `<span class="metric-pill">😴 ${m.horas_sueno}h${m.minutos_sueno ? m.minutos_sueno + 'min' : ''}</span>` : ''}
-                    ${m.glucosa_sangre    ? `<span class="metric-pill">🩸 ${m.glucosa_sangre} mg/dL</span>`     : ''}
-                    ${m.nivel_estres      ? `<span class="metric-pill">🧠 Estrés ${m.nivel_estres}/10</span>`   : ''}
+                    ${m.peso_kg            ? `<span class="metric-pill">⚖️ ${m.peso_kg} kg</span>` : ''}
+                    ${m.ritmo_cardiaco     ? `<span class="metric-pill">❤️ ${m.ritmo_cardiaco} bpm</span>` : ''}
+                    ${m.presion_sistolica  ? `<span class="metric-pill">🩺 ${m.presion_sistolica}/${m.presion_diastolica || '?'}</span>` : ''}
+                    ${m.horas_sueno != null ? `<span class="metric-pill">😴 ${m.horas_sueno}h${m.minutos_sueno ? ' ' + m.minutos_sueno + 'min' : ''}</span>` : ''}
+                    ${m.glucosa_sangre     ? `<span class="metric-pill">🩸 ${m.glucosa_sangre} mg/dL</span>` : ''}
+                    ${m.nivel_estres       ? `<span class="metric-pill">🧠 Estrés ${m.nivel_estres}/10</span>` : ''}
                 </div>
-                ${m.notas ? `<div class="metric-row-notes">${m.notas}</div>` : ''}
+                ${m.notes ? `<div class="metric-row-notes">${m.notes}</div>` : ''}
                 <button class="metric-delete-btn" onclick="deleteMetrica(${m.metrica_id})" title="Eliminar">✕</button>`;
             list.appendChild(el);
         });
-    } catch (_) {
+
+    } catch (err) {
+        console.error('Error crítico al renderizar el listado de métricas:', err);
         list.innerHTML = '<p style="color:#ff4444;text-align:center;padding:40px">Error al cargar métricas</p>';
     }
 }
@@ -70,23 +83,28 @@ function renderResumenCards(d) {
     if (!container) return;
     if (!d.total_registros) { container.innerHTML = ''; return; }
 
-    const fmtSueno = (min) => { const h = Math.floor(min/60), m = Math.round(min%60); return m ? `${h}h ${m}min` : `${h}h`; };
+    const fmtSueno = (min) => {
+        const h = Math.floor(min / 60), m = Math.round(min % 60);
+        return m ? `${h}h ${m}min` : `${h}h`;
+    };
 
-    container.innerHTML = `<div class="metrics-summary-grid" style="margin-bottom:28px">
-        ${rc('⚖️ Peso',    d.peso?.promedio          ? d.peso.promedio + ' kg'            : '—', d.peso?.tendencia)}
-        ${rc('❤️ Pulso',   d.ritmo_cardiaco?.promedio ? d.ritmo_cardiaco.promedio + ' bpm' : '—', '')}
-        ${rc('😴 Sueño',   d.sueño_minutos?.promedio  ? fmtSueno(d.sueño_minutos.promedio) : '—', '')}
-        ${rc('🧠 Estrés',  d.nivel_estres?.promedio    ? d.nivel_estres.promedio + '/10'    : '—', '')}
-        ${rc('🩺 Presión', d.presion_sistolica?.promedio ? `${d.presion_sistolica.promedio}/${d.presion_diastolica?.promedio}` : '—', '')}
-        ${rc('🩸 Glucosa', d.glucosa?.promedio          ? d.glucosa.promedio + ' mg/dL'     : '—', '')}
+    // Corregido: Se aplica un sistema grid flexible inline para prevenir desbordamientos si el dato es largo
+    container.innerHTML = `<div class="metrics-summary-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:12px; margin-bottom:28px; width:100%;">
+        ${rc('⚖️ Peso',    d.peso?.promedio            ? d.peso.promedio + ' kg'            : '—', d.peso?.tendencia || '')}
+        ${rc('❤️ Pulso',   d.ritmo_cardiaco?.promedio   ? d.ritmo_cardiaco.promedio + ' bpm' : '—', '')}
+        ${rc('😴 Sueño',   d['sueño_minutos']?.promedio ? fmtSueno(d['sueño_minutos'].promedio) : '—', '')}
+        ${rc('🧠 Estrés',  d.nivel_estres?.promedio     ? d.nivel_estres.promedio + '/10'    : '—', '')}
+        ${rc('🩺 Presión', d.presion_sistolica?.promedio ? `${d.presion_sistolica.promedio}/${d.presion_diastolica?.promedio || '?'}` : '—', '')}
+        ${rc('🩸 Glucosa', d.glucosa?.promedio           ? d.glucosa.promedio + ' mg/dL'     : '—', '')}
     </div>`;
 }
 
 function rc(label, value, sub) {
-    return `<div class="metric-summary-card">
-        <div class="metric-label">${label}</div>
-        <div class="metric-value">${value}</div>
-        ${sub ? `<div class="metric-sub">${capitalize(sub)}</div>` : ''}
+    // Corregido: Ajustes de padding elástico y font-size adaptativo en las tarjetas
+    return `<div class="metric-summary-card" style="padding: 14px 10px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; min-width: 0; overflow: hidden;">
+        <div class="metric-label" style="font-size: 13px; opacity: 0.8; margin-bottom: 4px; white-space: nowrap;">${label}</div>
+        <div class="metric-value" style="font-size: 20px; font-weight: 700; word-break: break-word; line-height: 1.2; width: 100%;">${value}</div>
+        ${sub ? `<div class="metric-sub" style="font-size: 11px; margin-top: 4px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; width: 100%;">${capitalize(sub)}</div>` : ''}
     </div>`;
 }
 
@@ -145,17 +163,17 @@ async function saveMetrica() {
     const fecha = document.getElementById('mFecha')?.value;
     if (!fecha) { showToast('Indica la fecha', 'error'); return; }
     const sueno = parseFloatOrNull('mSueno');
-    const body  = {
+    const body = {
         fecha_metrica:      fecha,
         peso_kg:            parseFloatOrNull('mPeso'),
         ritmo_cardiaco:     parseIntOrNull('mPulso'),
         presion_sistolica:  parseIntOrNull('mPSist'),
         presion_diastolica: parseIntOrNull('mPDias'),
-        horas_sueno:        sueno ? Math.floor(sueno) : null,
-        minutos_sueno:      sueno ? Math.round((sueno % 1) * 60) : null,
+        horas_sueno:        sueno != null ? Math.floor(sueno) : null,
+        minutos_sueno:      sueno != null ? Math.round((sueno % 1) * 60) : null,
         glucosa_sangre:     parseFloatOrNull('mGlucosa'),
         nivel_estres:       parseIntOrNull('mEstres'),
-        notas:              document.getElementById('mNotas')?.value.trim() || null,
+        notes:              document.getElementById('mNotas')?.value.trim() || null,
     };
     try {
         const res = await authFetch(`${API_URL}/metricas/`, {
@@ -163,11 +181,14 @@ async function saveMetrica() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body)
         });
-        if (!res.ok) throw new Error();
+        if (!res.ok) {
+            const d = await res.json().catch(() => ({}));
+            throw new Error(d.detail || 'Error al guardar');
+        }
         showToast('✓ Métrica guardada');
         removeModal('newMetricModal');
         loadMetricas();
-    } catch (_) { showToast('Error al guardar', 'error'); }
+    } catch (e) { showToast(e.message || 'Error al guardar', 'error'); }
 }
 
 window.showNewMetricModal = showNewMetricModal;

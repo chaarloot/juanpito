@@ -21,6 +21,10 @@
                 <button class="btn-new-training" id="btnNewWorkout">+ Nuevo Entrenamiento</button>
             </div>
 
+            <!-- XP BAR -->
+            <div id="xpContainer" style="margin-bottom:24px"></div>
+
+            <!-- STATS -->
             <div class="stats-grid">
                 <div class="stat-card yellow">
                     <div class="stat-label">ENTRENAMIENTOS</div>
@@ -48,6 +52,7 @@
                 </div>
             </div>
 
+            <!-- GRÁFICO + RACHA -->
             <div class="content-grid">
                 <div class="chart-container">
                     <div class="chart-header">
@@ -58,6 +63,7 @@
                         <canvas id="weeklyChart"></canvas>
                     </div>
                 </div>
+
                 <div class="streak-container">
                     <div class="chart-header">
                         <h3>RACHA ACTUAL</h3>
@@ -67,13 +73,12 @@
                         <div class="streak-number" id="streakNum">—</div>
                         <div class="streak-label">DÍAS</div>
                     </div>
-                    <div class="streak-info">
-                        <p id="streakMsg"><span class="percentage">Cargando…</span></p>
-                    </div>
+                    <div class="streak-info" id="streakMsg" style="text-align:center;margin-top:12px"></div>
                 </div>
             </div>
 
-            <div class="exercises-container">
+            <!-- SESIONES RECIENTES -->
+            <div class="exercises-container" style="margin-top:20px">
                 <div class="exercises-header">
                     <h3>ÚLTIMAS SESIONES</h3>
                     <a href="historial.html" class="badge-active" style="text-decoration:none;font-size:12px">Ver todo →</a>
@@ -83,6 +88,7 @@
                 </div>
             </div>
 
+            <!-- ACCESOS RÁPIDOS -->
             <div class="quick-access-grid" style="margin-top:24px">
                 <a href="habitos.html"    class="quick-card"><span>📋</span>Mis Hábitos</a>
                 <a href="metricas.html"   class="quick-card"><span>📏</span>Métricas</a>
@@ -95,6 +101,7 @@
         </div>
     </main>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="../js/shared.js"></script>
 <script src="../js/dashboard.js"></script>

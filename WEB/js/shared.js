@@ -69,6 +69,7 @@ const PAGE_MAP = {
     estadisticas:'estadisticas.html',
     historial:   'historial.html',
     perfil:      'perfil.html',
+    temporizador: 'temporizador.html',
 };
 
 // ── Sidebar ──────────────────────────────────────────────────
@@ -86,6 +87,7 @@ const SIDEBAR_LINKS = [
         { key: 'estadisticas', icon: '📈', label: 'Estadísticas'  },
         { key: 'historial',    icon: '⏱️', label: 'Historial'     },
         { key: 'perfil',       icon: '👤', label: 'Mi Perfil'     },
+        { key: 'temporizador', icon: '⏱️', label: 'Temporizador'  },
     ]},
 ];
 

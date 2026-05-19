@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temporizador — Vitalia JC</title>
+    <link rel="stylesheet" href="../css/estilos.css">
+    <link rel="stylesheet" href="../css/app-extra.css">
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+        <div class="page active">
+
+            <div class="page-header">
+                <h1>⏱ TEMPORIZADOR</h1>
+            </div>
+
+            <!-- SELECTOR DE MODO -->
+            <div class="timer-mode-grid">
+                <button class="timer-mode-btn active" data-mode="libre" onclick="setMode('libre')">
+                    <span class="tmode-icon">🕐</span>
+                    <span class="tmode-name">Libre</span>
+                    <span class="tmode-desc">Cronómetro simple</span>
+                </button>
+                <button class="timer-mode-btn" data-mode="tabata" onclick="setMode('tabata')">
+                    <span class="tmode-icon">🔥</span>
+                    <span class="tmode-name">Tabata</span>
+                    <span class="tmode-desc">20s trabajo / 10s descanso</span>
+                </button>
+                <button class="timer-mode-btn" data-mode="hiit" onclick="setMode('hiit')">
+                    <span class="tmode-icon">⚡</span>
+                    <span class="tmode-name">HIIT</span>
+                    <span class="tmode-desc">Personalizable</span>
+                </button>
+                <button class="timer-mode-btn" data-mode="descanso" onclick="setMode('descanso')">
+                    <span class="tmode-icon">😮‍💨</span>
+                    <span class="tmode-name">Descanso</span>
+                    <span class="tmode-desc">Cuenta atrás</span>
+                </button>
+            </div>
+
+            <!-- CONFIGURACIÓN -->
+            <div class="timer-config" id="timerConfig"></div>
+
+            <!-- DISPLAY PRINCIPAL -->
+            <div class="timer-display-wrap">
+                <svg class="timer-ring" viewBox="0 0 220 220">
+                    <circle class="timer-ring-bg" cx="110" cy="110" r="100"/>
+                    <circle class="timer-ring-fill" id="timerRingFill" cx="110" cy="110" r="100"
+                        stroke-dasharray="628" stroke-dashoffset="0"/>
+                </svg>
+                <div class="timer-display-inner">
+                    <div class="timer-phase" id="timerPhase">LISTO</div>
+                    <div class="timer-time"  id="timerTime">00:00</div>
+                    <div class="timer-round" id="timerRound"></div>
+                </div>
+            </div>
+
+            <!-- CONTROLES -->
+            <div class="timer-controls">
+                <button class="timer-btn-secondary" id="btnReset" onclick="resetTimer()">↺ Reset</button>
+                <button class="timer-btn-primary"   id="btnStart" onclick="toggleTimer()">▶ Iniciar</button>
+                <button class="timer-btn-secondary" id="btnSkip"  onclick="skipPhase()">⏭ Saltar</button>
+            </div>
+
+            <!-- HISTORIAL DE RONDAS -->
+            <div class="timer-log-wrap">
+                <div class="chart-header" style="margin-bottom:12px">
+                    <h3>REGISTRO DE RONDAS</h3>
+                    <button class="badge-active" style="border:none;cursor:pointer;font-size:12px" onclick="clearLog()">Limpiar</button>
+                </div>
+                <div id="timerLog" class="timer-log">
+                    <p style="color:#888;text-align:center;padding:20px">Las rondas completadas aparecerán aquí</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<script src="../js/shared.js"></script>
+<script src="../js/temporizador.js"></script>
+</body>
+</html>
