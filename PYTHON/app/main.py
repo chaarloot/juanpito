@@ -22,6 +22,7 @@ app = FastAPI(
     description="API REST para la plataforma Vitalia Tracker – gestión de salud y bienestar.",
     version="1.0.0",
     lifespan=lifespan,
+    redirect_slashes=False,
 )
 
 # ─── CORS ────────────────────────────────────────────────────────────────────

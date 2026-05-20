@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rutina Aleatoria — Vitalia JC</title>
+    <link rel="stylesheet" href="../css/estilos.css">
+    <link rel="stylesheet" href="../css/app-extra.css">
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+        <div class="page active">
+
+            <div class="page-header">
+                <h1>🎲 RUTINA ALEATORIA</h1>
+                <button class="btn-primary" id="btnGenerar" onclick="generarRutina()">🎲 Generar rutina</button>
+            </div>
+
+            <p style="color:#a0a0a0;margin-bottom:24px;font-size:14px">
+                Basado en tu historial, el sistema elige grupos musculares que llevas más tiempo sin trabajar y genera una rutina equilibrada.
+            </p>
+
+            <!-- FILTROS -->
+            <div class="rng-filtros">
+                <div class="rng-filtro-group">
+                    <label>Duración objetivo</label>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap">
+                        <button class="filter-chip active" data-dur="30" onclick="setDur(this,'30')">30 min</button>
+                        <button class="filter-chip" data-dur="45" onclick="setDur(this,'45')">45 min</button>
+                        <button class="filter-chip" data-dur="60" onclick="setDur(this,'60')">60 min</button>
+                        <button class="filter-chip" data-dur="90" onclick="setDur(this,'90')">90 min</button>
+                    </div>
+                </div>
+                <div class="rng-filtro-group">
+                    <label>Nivel</label>
+                    <div style="display:flex;gap:8px">
+                        <button class="filter-chip" data-niv="Básico"     onclick="setNiv(this,'Básico')">Básico</button>
+                        <button class="filter-chip active" data-niv="Intermedio" onclick="setNiv(this,'Intermedio')">Intermedio</button>
+                        <button class="filter-chip" data-niv="Avanzado"   onclick="setNiv(this,'Avanzado')">Avanzado</button>
+                        <button class="filter-chip" data-niv="Mixto"      onclick="setNiv(this,'Mixto')">Mixto</button>
+                    </div>
+                </div>
+                <div class="rng-filtro-group">
+                    <label>Equipamiento</label>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap">
+                        <button class="filter-chip active" data-eq="gym"  onclick="setEq(this,'gym')">🏋️ Gym completo</button>
+                        <button class="filter-chip" data-eq="casa"        onclick="setEq(this,'casa')">🏠 En casa</button>
+                        <button class="filter-chip" data-eq="corporal"    onclick="setEq(this,'corporal')">💪 Solo corporal</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RESULTADO -->
+            <div id="rutinaResult" style="margin-top:24px">
+                <div class="rng-placeholder">
+                    <div style="font-size:60px">🎲</div>
+                    <p>Pulsa <strong style="color:#c8ff00">Generar rutina</strong> para empezar</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+<script src="../js/shared.js"></script>
+<script src="../js/rutina-aleatoria.js"></script>
+</body>
+</html>

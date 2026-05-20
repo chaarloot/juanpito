@@ -527,3 +527,209 @@ select:focus {
     .timer-cfg-grid  { flex-direction: column; }
     .timer-time      { font-size: 40px; }
 }
+
+/* ── PREDICCIÓN IA ── */
+.pred-objetivo-wrap {
+    padding: 20px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius);
+    margin-bottom: 8px;
+}
+
+.pred-objetivo-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.pred-objetivo-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    padding: 16px 10px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius);
+    cursor: pointer; transition: .2s; color: #a0a0a0;
+    font-size: 13px; font-weight: 600; text-align: center;
+}
+.pred-objetivo-btn span:first-child { font-size: 24px; }
+.pred-objetivo-btn:hover { border-color: rgba(200,255,0,0.3); color: #fff; }
+.pred-objetivo-btn.active {
+    background: rgba(200,255,0,0.1);
+    border-color: #c8ff00;
+    color: #c8ff00;
+}
+
+/* TARJETA RESULTADO */
+.pred-card {
+    padding: 24px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius);
+}
+
+.pred-card-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.pred-card-title {
+    font-size: 18px; font-weight: 700; margin-bottom: 6px;
+}
+
+.pred-card-actual {
+    font-size: 14px; color: #a0a0a0;
+}
+
+.pred-items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.pred-item {
+    padding: 14px 16px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 10px;
+    display: flex; flex-direction: column; gap: 6px;
+}
+
+.pred-item-label {
+    font-size: 11px; color: #888;
+    text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+.pred-item-value {
+    font-size: 20px; font-weight: 700;
+}
+
+.pred-prediccion {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 16px;
+    background: rgba(200,255,0,0.06);
+    border: 1px solid rgba(200,255,0,0.2);
+    border-radius: 10px;
+    font-size: 14px; color: #e0e0e0; line-height: 1.7;
+}
+
+.pred-ia-badge {
+    padding: 4px 10px;
+    background: rgba(200,255,0,0.15);
+    border: 1px solid rgba(200,255,0,0.3);
+    border-radius: 999px;
+    font-size: 11px; font-weight: 700; color: #c8ff00;
+    white-space: nowrap; flex-shrink: 0;
+    margin-top: 2px;
+}
+
+/* INSIGHTS */
+.insights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+}
+
+.insight-card {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 16px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    transition: .2s;
+}
+
+.insight-card:hover { background: rgba(255,255,255,0.06); }
+.insight-icon { font-size: 22px; flex-shrink: 0; }
+
+@media (max-width: 768px) {
+    .pred-objetivo-grid { grid-template-columns: repeat(2,1fr); }
+    .pred-items-grid    { grid-template-columns: repeat(2,1fr); }
+    .insights-grid      { grid-template-columns: 1fr; }
+}
+
+/* ── RUTINA ALEATORIA ── */
+.rng-filtros {
+    display: flex; flex-direction: column; gap: 16px;
+    padding: 20px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius);
+    margin-bottom: 8px;
+}
+.rng-filtro-group { display: flex; flex-direction: column; gap: 8px; }
+.rng-filtro-group label {
+    font-size: 11px; font-weight: 700; color: #a0a0a0;
+    text-transform: uppercase; letter-spacing: 1px;
+}
+
+.rng-placeholder {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 16px; padding: 60px 20px; color: #888;
+    text-align: center; font-size: 15px;
+}
+
+.rng-result-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 20px;
+    background: rgba(200,255,0,0.06);
+    border: 1px solid rgba(200,255,0,0.2);
+    border-radius: var(--radius);
+    margin-bottom: 16px; gap: 16px; flex-wrap: wrap;
+}
+.rng-grupo-tag {
+    padding: 4px 10px;
+    background: rgba(200,255,0,0.1); border: 1px solid rgba(200,255,0,0.2);
+    border-radius: 999px; font-size: 12px; font-weight: 600; color: #c8ff00;
+}
+.rng-grupo-tag small { color: #a0a0a0; font-weight: 400; }
+
+.rng-fase {
+    padding: 14px 18px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 10px; margin: 12px 0;
+}
+.rng-fase-label { font-size: 13px; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 4px; }
+
+.rng-ejercicios-grid {
+    display: flex; flex-direction: column; gap: 10px;
+}
+.rng-ejercicio-card {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 16px 18px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius); transition: .2s;
+}
+.rng-ejercicio-card:hover { border-color: rgba(200,255,0,0.2); }
+.rng-ejercicio-card.completado {
+    background: rgba(200,255,0,0.06);
+    border-color: rgba(200,255,0,0.3);
+    opacity: 0.8;
+}
+.rng-ej-num {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(200,255,0,0.12); border: 1px solid rgba(200,255,0,0.3);
+    color: #c8ff00; font-weight: 700; font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.rng-ej-body { flex: 1; }
+.rng-ej-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.rng-ej-name  { font-size: 16px; font-weight: 700; }
+.rng-ej-dif   { font-size: 11px; font-weight: 700; }
+.rng-ej-grupo { font-size: 11px; color: #a0a0a0; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.rng-ej-config { display: flex; gap: 16px; font-size: 13px; color: #a0a0a0; margin-bottom: 6px; }
+.rng-ej-desc  { font-size: 12px; color: #888; }
+.rng-ej-check {
+    font-size: 22px; color: #888; cursor: pointer;
+    transition: .15s; flex-shrink: 0; padding: 4px;
+    width: 36px; text-align: center;
+}
+.rng-ej-check:hover { color: #c8ff00; transform: scale(1.2); }
+
+@media (max-width: 768px) {
+    .rng-result-header { flex-direction: column; }
+    .rng-result-header .btn-primary { width: 100%; }
+}

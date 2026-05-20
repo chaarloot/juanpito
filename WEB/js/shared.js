@@ -70,6 +70,8 @@ const PAGE_MAP = {
     historial:   'historial.html',
     perfil:      'perfil.html',
     temporizador: 'temporizador.html',
+    prediccion:          'prediccion.html',
+    'rutina-aleatoria': 'rutina-aleatoria.html',
 };
 
 // ── Sidebar ──────────────────────────────────────────────────
@@ -88,6 +90,8 @@ const SIDEBAR_LINKS = [
         { key: 'historial',    icon: '⏱️', label: 'Historial'     },
         { key: 'perfil',       icon: '👤', label: 'Mi Perfil'     },
         { key: 'temporizador', icon: '⏱️', label: 'Temporizador'  },
+        { key: 'prediccion',     icon: '🤖', label: 'Predicción IA'    },
+        { key: 'rutina-aleatoria', icon: '🎲', label: 'Rutina Aleatoria' },
     ]},
 ];
 
