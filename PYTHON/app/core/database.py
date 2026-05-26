@@ -26,7 +26,7 @@ class Base(DeclarativeBase):
     pass
 
 
-# Dependencia para inyectar la sesión de BD en los endpoints
+#inyecta la sesión de BD a los endpoints
 def get_db():
     db = SessionLocal()
     try:

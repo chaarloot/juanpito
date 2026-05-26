@@ -7,10 +7,7 @@ from pydantic import BaseModel, EmailStr, field_validator, model_validator
 import re
 
 
-# ════════════════════════════════════════════════════════════
 # USUARIO
-# ════════════════════════════════════════════════════════════
-
 class UsuarioBase(BaseModel):
     email: EmailStr
     nombre: str
@@ -22,22 +19,19 @@ class UsuarioBase(BaseModel):
     zona_horaria: Optional[str] = "UTC"
 
     @field_validator("nombre", "apellidos")
-    @classmethod
-    def nombre_not_empty(cls, v: str) -> str:
+    def nombre_not_empty(v: str) -> str:
         if not v or len(v.strip()) < 2:
             raise ValueError("Nombre/apellidos deben tener al menos 2 caracteres")
         return v.strip()
 
     @field_validator("altura_cm")
-    @classmethod
-    def altura_valida(cls, v: Optional[float]) -> Optional[float]:
+    def altura_valida(v: Optional[float]) -> Optional[float]:
         if v is not None and not (50 <= v <= 300):
             raise ValueError("Altura debe estar entre 50 y 300 cm")
         return v
 
     @field_validator("peso_kg")
-    @classmethod
-    def peso_valido(cls, v: Optional[float]) -> Optional[float]:
+    def peso_valido(v: Optional[float]) -> Optional[float]:
         if v is not None and not (30 <= v <= 300):
             raise ValueError("Peso debe estar entre 30 y 300 kg")
         return v
@@ -47,8 +41,7 @@ class UsuarioCreate(UsuarioBase):
     password: str
 
     @field_validator("password")
-    @classmethod
-    def password_strength(cls, v: str) -> str:
+    def password_strength(v: str) -> str:
         if len(v) < 8:
             raise ValueError("La contraseña debe tener al menos 8 caracteres")
         if not re.search(r"[A-Z]", v):
@@ -81,29 +74,17 @@ class UsuarioOut(UsuarioBase):
     model_config = {"from_attributes": True}
 
 
-# ════════════════════════════════════════════════════════════
 # AUTH
-# ════════════════════════════════════════════════════════════
-
 class Token(BaseModel):
     access_token: str
     refresh_token: Optional[str] = None
     token_type: str = "bearer"
 
 
-class TokenData(BaseModel):
-    sub: Optional[str] = None
+# TokenData and LoginRequest removed — not referenced elsewhere in the codebase
 
 
-class LoginRequest(BaseModel):
-    username: EmailStr   # OAuth2PasswordRequestForm usa 'username'
-    password: str
-
-
-# ════════════════════════════════════════════════════════════
 # MÉTRICA DE SALUD
-# ════════════════════════════════════════════════════════════
-
 class MetricaSaludBase(BaseModel):
     fecha_metrica: date
     peso_kg: Optional[float] = None
@@ -117,50 +98,43 @@ class MetricaSaludBase(BaseModel):
     notas: Optional[str] = None
 
     @field_validator("peso_kg")
-    @classmethod
-    def peso_valido(cls, v: Optional[float]) -> Optional[float]:
+    def peso_valido(v: Optional[float]) -> Optional[float]:
         if v is not None and not (30 <= v <= 300):
             raise ValueError("Peso debe estar entre 30 y 300 kg")
         return v
 
     @field_validator("presion_sistolica", "presion_diastolica")
-    @classmethod
-    def presion_valida(cls, v: Optional[int]) -> Optional[int]:
+    def presion_valida(v: Optional[int]) -> Optional[int]:
         if v is not None and not (40 <= v <= 200):
             raise ValueError("Presión debe estar entre 40 y 200 mmHg")
         return v
 
     @field_validator("ritmo_cardiaco")
-    @classmethod
-    def ritmo_valido(cls, v: Optional[int]) -> Optional[int]:
+    def ritmo_valido(v: Optional[int]) -> Optional[int]:
         if v is not None and not (30 <= v <= 200):
             raise ValueError("Ritmo cardíaco debe estar entre 30 y 200 bpm")
         return v
 
     @field_validator("glucosa_sangre")
-    @classmethod
-    def glucosa_valida(cls, v: Optional[float]) -> Optional[float]:
+    def glucosa_valida(v: Optional[float]) -> Optional[float]:
         if v is not None and not (40 <= v <= 500):
             raise ValueError("Glucosa debe estar entre 40 y 500 mg/dL")
         return v
 
     @field_validator("horas_sueno")
-    @classmethod
-    def horas_sueno_valida(cls, v: Optional[int]) -> Optional[int]:
+    def horas_sueno_valida(v: Optional[int]) -> Optional[int]:
         if v is not None and not (0 <= v <= 24):
             raise ValueError("Horas de sueño debe estar entre 0 y 24")
         return v
 
     @field_validator("minutos_sueno")
-    @classmethod
-    def minutos_sueno_valida(cls, v: Optional[int]) -> Optional[int]:
+    def minutos_sueno_valida(v: Optional[int]) -> Optional[int]:
         if v is not None and not (0 <= v <= 59):
             raise ValueError("Minutos de sueño debe estar entre 0 y 59")
         return v
 
     @field_validator("nivel_estres")
-    @classmethod
-    def check_estres(cls, v):
+    def check_estres(v):
         if v is not None and not (1 <= v <= 10):
             raise ValueError("nivel_estres debe estar entre 1 y 10")
         return v
@@ -191,10 +165,7 @@ class MetricaSaludOut(MetricaSaludBase):
     model_config = {"from_attributes": True}
 
 
-# ════════════════════════════════════════════════════════════
 # HÁBITO
-# ════════════════════════════════════════════════════════════
-
 class HabitoBase(BaseModel):
     nombre: str
     descripcion: Optional[str] = None
@@ -205,15 +176,13 @@ class HabitoBase(BaseModel):
     activo: Optional[bool] = True
 
     @field_validator("nombre")
-    @classmethod
-    def nombre_no_vacio(cls, v: str) -> str:
+    def nombre_no_vacio(v: str) -> str:
         if not v or len(v.strip()) < 2:
             raise ValueError("Nombre del hábito debe tener al menos 2 caracteres")
         return v.strip()
 
     @field_validator("objetivo_cantidad")
-    @classmethod
-    def objetivo_valido(cls, v: Optional[int]) -> Optional[int]:
+    def objetivo_valido(v: Optional[int]) -> Optional[int]:
         if v is not None and v <= 0:
             raise ValueError("Objetivo cantidad debe ser mayor a 0")
         return v
@@ -242,10 +211,7 @@ class HabitoOut(HabitoBase):
     model_config = {"from_attributes": True}
 
 
-# ════════════════════════════════════════════════════════════
 # REGISTRO DE HÁBITO
-# ════════════════════════════════════════════════════════════
-
 class RegistroHabitoBase(BaseModel):
     fecha_registro: date
     cantidad_completada: Optional[int] = 0
@@ -269,10 +235,7 @@ class RegistroHabitoOut(RegistroHabitoBase):
     model_config = {"from_attributes": True}
 
 
-# ════════════════════════════════════════════════════════════
 # SESIÓN DE ENTRENAMIENTO
-# ════════════════════════════════════════════════════════════
-
 class SesionEntrenamientoBase(BaseModel):
     tipo_entrenamiento: str
     inicio: datetime
@@ -283,15 +246,13 @@ class SesionEntrenamientoBase(BaseModel):
     notas: Optional[str] = None
 
     @field_validator("tipo_entrenamiento")
-    @classmethod
-    def tipo_no_vacio(cls, v: str) -> str:
+    def tipo_no_vacio(v: str) -> str:
         if not v or len(v.strip()) < 2:
             raise ValueError("Tipo de entrenamiento debe tener al menos 2 caracteres")
         return v.strip()
 
     @field_validator("duracion_minutos")
-    @classmethod
-    def duracion_valida(cls, v: Optional[int]) -> Optional[int]:
+    def duracion_valida(v: Optional[int]) -> Optional[int]:
         if v is not None and v <= 0:
             raise ValueError("Duración debe ser mayor a 0 minutos")
         if v is not None and v > 1440:  # 24 horas
@@ -299,22 +260,19 @@ class SesionEntrenamientoBase(BaseModel):
         return v
 
     @field_validator("calorias_quemadas")
-    @classmethod
-    def calorias_validas(cls, v: Optional[int]) -> Optional[int]:
+    def calorias_validas(v: Optional[int]) -> Optional[int]:
         if v is not None and v < 0:
             raise ValueError("Calorías no puede ser negativa")
         return v
 
     @field_validator("ritmo_promedio")
-    @classmethod
-    def ritmo_valido(cls, v: Optional[int]) -> Optional[int]:
+    def ritmo_valido(v: Optional[int]) -> Optional[int]:
         if v is not None and not (30 <= v <= 200):
             raise ValueError("Ritmo promedio debe estar entre 30 y 200 bpm")
         return v
 
     @field_validator("nivel_intensidad")
-    @classmethod
-    def check_intensidad(cls, v):
+    def check_intensidad(v):
         if v is not None and not (1 <= v <= 10):
             raise ValueError("nivel_intensidad debe estar entre 1 y 10")
         return v
@@ -342,10 +300,7 @@ class SesionEntrenamientoOut(SesionEntrenamientoBase):
     model_config = {"from_attributes": True}
 
 
-# ════════════════════════════════════════════════════════════
 # MEDICACIÓN PROGRAMADA
-# ════════════════════════════════════════════════════════════
-
 FrecuenciaMed = Literal[
     "una_vez_dia", "dos_veces_dia", "tres_veces_dia",
     "semanal", "segun_necesidad", "personalizado"
@@ -363,8 +318,7 @@ class MedicacionBase(BaseModel):
     activo: Optional[bool] = True
 
     @field_validator("nombre_medicacion")
-    @classmethod
-    def nombre_no_vacio(cls, v: str) -> str:
+    def nombre_no_vacio(v: str) -> str:
         if not v or len(v.strip()) < 2:
             raise ValueError("Nombre de medicación debe tener al menos 2 caracteres")
         return v.strip()
@@ -400,10 +354,7 @@ class MedicacionOut(MedicacionBase):
     model_config = {"from_attributes": True}
 
 
-# ════════════════════════════════════════════════════════════
 # PLAN
-# ════════════════════════════════════════════════════════════
-
 TipoPlan = Literal["fitness", "nutricion", "bienestar", "rehabilitacion", "personalizado"]
 EstadoPlan = Literal["borrador", "activo", "pausado", "completado", "cancelado"]
 
@@ -416,11 +367,9 @@ class PlanBase(BaseModel):
     fecha_inicio: date
     fecha_fin: Optional[date] = None
     estado: Optional[EstadoPlan] = "borrador"
-    # eliminado entrenador_id: todos los planes pertenecen a su `usuario`
 
     @field_validator("nombre_plan")
-    @classmethod
-    def nombre_no_vacio(cls, v: str) -> str:
+    def nombre_no_vacio(v: str) -> str:
         if not v or len(v.strip()) < 2:
             raise ValueError("Nombre del plan debe tener al menos 2 caracteres")
         return v.strip()
@@ -456,13 +405,7 @@ class PlanOut(PlanBase):
     model_config = {"from_attributes": True}
 
 
-# Notas de entrenador removidas — ya no existen en la API
-
-
-# ════════════════════════════════════════════════════════════
 # ALERTA
-# ════════════════════════════════════════════════════════════
-
 TipoAlerta = Literal[
     "medicacion", "habito", "entrenamiento",
     "chequeo_salud", "sistema"
@@ -478,8 +421,7 @@ class AlertaBase(BaseModel):
     programada_para: Optional[datetime] = None
 
     @field_validator("titulo")
-    @classmethod
-    def titulo_no_vacio(cls, v: str) -> str:
+    def titulo_no_vacio(v: str) -> str:
         if not v or len(v.strip()) < 2:
             raise ValueError("Título de alerta debe tener al menos 2 caracteres")
         return v.strip()
@@ -506,27 +448,11 @@ class AlertaOut(AlertaBase):
     model_config = {"from_attributes": True}
 
 
-# ════════════════════════════════════════════════════════════
 # TOKEN DE AUTENTICACIÓN
-# ════════════════════════════════════════════════════════════
-
-class TokenAutenticacionOut(BaseModel):
-    token_id: int
-    usuario_id: int
-    tipo_token: str
-    expira: datetime
-    ip: Optional[str]
-    user_agent: Optional[str]
-    fecha_creacion: datetime
-    revocado_en: Optional[datetime]
-
-    model_config = {"from_attributes": True}
+# TokenAutenticacionOut schema removed — not referenced elsewhere in the codebase
 
 
-# ════════════════════════════════════════════════════════════
 # SESIONES DE ENTRENAMIENTO
-# ════════════════════════════════════════════════════════════
-
 class SesionCrear(BaseModel):
     tipo_entrenamiento: str
     inicio: Optional[datetime] = None

@@ -14,7 +14,7 @@
 
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
-/* ── CUSTOM CURSOR ── */
+/*cursor*/
 button, a, input[type="submit"], input[type="button"], .cursor-pointer {
   cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="8" fill="none" stroke="%23e8ff47" stroke-width="2" opacity="0.9"/><circle cx="16" cy="16" r="4" fill="%23e8ff47"/></svg>') 16 16, pointer;
 }
@@ -51,7 +51,7 @@ body {
   background: rgba(232, 255, 71, 0.2);
 }
 
-/* ── LEFT PANEL ── */
+/*panel izq*/
 .left-panel {
   flex: 1;
   position: relative;
@@ -98,7 +98,6 @@ body {
   animation: floatUp 6s ease-in-out infinite;
 }
 
-/* ✔ Burbujas alineadas y equilibradas */
 .bubble:nth-child(3) { 
   top: 18%; 
   left: 20%; 
@@ -183,7 +182,7 @@ body {
   flex-shrink: 0;
 }
 
-/* ── RIGHT PANEL ── */
+/*panel drch*/
 .right-panel {
   width: 460px;
   flex-shrink: 0;
@@ -215,7 +214,6 @@ body {
 
 .form-logo span { color: var(--accent); }
 
-/* TABS */
 .tabs {
   display: flex;
   background: var(--surface2);
@@ -242,7 +240,6 @@ body {
   color: #0d0d0f;
 }
 
-/* FORMS */
 .form-panel { display: none; }
 .form-panel.active { display: block; }
 

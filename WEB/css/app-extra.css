@@ -1,8 +1,3 @@
-/* ============================================================
-   app-extra.css — Vitalia JC
-   ============================================================ */
-
-/* ── ALERTS BADGE ── */
 .alerts-badge {
     display: inline-flex; align-items: center; justify-content: center;
     min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px;
@@ -10,7 +5,6 @@
     margin-left: auto; line-height: 1;
 }
 
-/* ── LOADING / EMPTY ── */
 .loading-text { text-align:center; color:#888; padding:40px; }
 
 .empty-state {
@@ -19,7 +13,6 @@
 }
 .empty-icon { font-size: 48px; margin-bottom: 16px; }
 
-/* ── TOAST ── */
 #vitaliaToast {
     position:fixed; bottom:30px; right:30px; z-index:9999;
     padding:14px 22px; border-radius:10px; font-size:14px; font-weight:600;
@@ -27,13 +20,11 @@
     box-shadow:0 8px 24px rgba(0,0,0,.4);
 }
 
-/* ── PAGE HEADER ── */
 .page-subtitle {
     display: flex; gap: 16px; margin-top: 4px;
     font-size: 13px; color: #a0a0a0; align-items: center; flex-wrap: wrap;
 }
 
-/* ── FIX DESPLEGABLES — opciones visibles en todos los navegadores ── */
 select,
 .inline-select,
 .modal-select {
@@ -61,7 +52,6 @@ select:focus,
     box-shadow: 0 0 0 2px rgba(200,255,0,0.15);
 }
 
-/* ── INLINE SELECT ── */
 .inline-select {
     padding: 6px 12px;
     font-size: 13px;
@@ -74,7 +64,6 @@ select:focus,
     padding-right: 28px !important;
 }
 
-/* ── MODAL SELECT ── */
 .modal-select {
     width: 100%;
     padding: 12px 14px;
@@ -87,13 +76,11 @@ select:focus,
     box-shadow: 0 0 0 3px rgba(200,255,0,.12);
 }
 
-/* ── DETAIL GRID ── */
 .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .detail-item { padding: 14px; background: rgba(255,255,255,0.04); border-radius: 10px; text-align: center; }
 .detail-item span { display:block; font-size:11px; color:#a0a0a0; margin-bottom:6px; }
 .detail-item strong { font-size:22px; font-weight:700; color:#c8ff00; }
 
-/* ── METRICS SUMMARY ── */
 .metrics-summary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap: 16px; }
 .metric-summary-card {
     padding: 18px;
@@ -104,7 +91,6 @@ select:focus,
 .metric-value { font-size:24px; font-weight:700; color:#c8ff00; }
 .metric-sub   { font-size:11px; color:#a0a0a0; margin-top:4px; text-transform:capitalize; }
 
-/* ── HABIT CARD ── */
 .habit-card {
     padding: 20px;
     background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
@@ -125,7 +111,6 @@ select:focus,
 .habit-stats  { display:flex; justify-content:space-between; font-size:12px; color:#a0a0a0; margin-bottom:14px; }
 .habit-actions { display:flex; gap:8px; }
 
-/* ── MED CARD ── */
 .med-card {
     padding: 20px;
     background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
@@ -142,7 +127,6 @@ select:focus,
 .med-instrucciones { font-size:13px; color:#a0a0a0; padding:10px; background:rgba(255,255,255,.04); border-radius:8px; margin-bottom:12px; }
 .med-actions { display:flex; gap:8px; }
 
-/* ── METRICA ROW ── */
 .metric-row-card {
     position:relative; padding:16px 20px;
     background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07);
@@ -163,7 +147,6 @@ select:focus,
 }
 .metric-delete-btn:hover { color:#ff4444; background:rgba(255,68,68,.12); }
 
-/* ── EJERCICIOS GRID ── */
 .ejercicios-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap:16px; }
 .ejercicio-card {
     padding:20px;
@@ -178,7 +161,6 @@ select:focus,
 .ejercicio-meta   { display:flex; gap:14px; font-size:13px; color:#a0a0a0; margin-bottom:10px; }
 .ejercicio-desc   { font-size:12px; color:#888; line-height:1.6; }
 
-/* ── FILTER CHIPS ── */
 .filter-chip {
     padding:6px 14px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
     border-radius:999px; color:#a0a0a0; font:inherit; font-size:13px; cursor:pointer; transition:.15s;
@@ -186,7 +168,6 @@ select:focus,
 .filter-chip:hover  { border-color:rgba(200,255,0,.4); color:#fff; }
 .filter-chip.active { background:rgba(200,255,0,.15); border-color:#c8ff00; color:#c8ff00; font-weight:600; }
 
-/* ── HISTORIAL ── */
 .history-date-label {
     font-size:12px; color:#a0a0a0; font-weight:600; letter-spacing:1px;
     text-transform:capitalize; padding:8px 0 6px; margin-top:16px;
@@ -205,11 +186,9 @@ select:focus,
 .history-actions { display:flex; gap:6px; flex-shrink:0; }
 .local-badge { padding:2px 8px; background:rgba(77,166,255,.15); border:1px solid rgba(77,166,255,.3); border-radius:999px; font-size:11px; color:#4da6ff; }
 
-/* ── ICON BUTTONS ── */
 .icon-btn { padding:7px 10px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); border-radius:8px; cursor:pointer; font-size:14px; transition:.15s; }
 .icon-btn.danger:hover { background:rgba(255,68,68,.15); border-color:#ff4444; }
 
-/* ── CALENDAR ── */
 .calendar-day-header { text-align:center; font-size:11px; color:#a0a0a0; font-weight:600; letter-spacing:1px; padding:8px 0; }
 .calendar-day.has-session { background:rgba(200,255,0,.1); border-color:rgba(200,255,0,.3) !important; }
 .calendar-day.today { border:2px solid #c8ff00 !important; }
@@ -220,13 +199,11 @@ select:focus,
 .session-type { font-weight:600; }
 .session-dur, .session-cal { font-size:12px; color:#a0a0a0; }
 
-/* ── CALENDAR STATS ── */
 .stat-mini { padding:12px 20px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); border-radius:10px; display:flex; flex-direction:column; gap:4px; }
 .stat-mini span   { font-size:11px; color:#a0a0a0; }
 .stat-mini strong { font-size:20px; font-weight:700; color:#c8ff00; }
 .calendar-nav { display:flex; align-items:center; gap:12px; }
 
-/* ── QUICK ACCESS ── */
 .quick-access-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(140px,1fr)); gap:12px; }
 .quick-card {
     display:flex; flex-direction:column; align-items:center; gap:8px;
@@ -238,7 +215,6 @@ select:focus,
 .quick-card:hover { border-color:rgba(200,255,0,.3); color:#fff; background:rgba(200,255,0,.06); transform:translateY(-2px); }
 .quick-card span { font-size:22px; display:block; }
 
-/* ── RECENT SESSIONS ── */
 .recent-sessions-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(200px,1fr)); gap:12px; padding:4px; }
 .recent-session-card { padding:16px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); border-radius:12px; transition:.2s; }
 .recent-session-card:hover { border-color:rgba(200,255,0,.2); }
@@ -246,7 +222,6 @@ select:focus,
 .rs-name { font-size:15px; font-weight:700; margin-bottom:6px; }
 .rs-meta { font-size:12px; color:#a0a0a0; }
 
-/* ── PERFIL ── */
 .perfil-layout { display:grid; grid-template-columns:280px 1fr; gap:24px; align-items:flex-start; }
 .perfil-sidebar { display:flex; flex-direction:column; gap:16px; }
 .perfil-avatar-card { padding:28px 20px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius: var(--radius); text-align:center; }
@@ -262,7 +237,7 @@ select:focus,
 .danger-zone { border-color:rgba(255,68,68,.25); }
 .danger-zone h2 { color:#ff4444; }
 
-/* ── RESPONSIVE ── */
+/*RESPONSIVE*/
 @media (max-width: 1024px) { .perfil-layout { grid-template-columns:1fr; } }
 @media (max-width: 768px) {
     .quick-access-grid { grid-template-columns:repeat(3,1fr); }
@@ -277,7 +252,6 @@ select:focus,
     .habit-actions { flex-direction:column; }
 }
 
-/* ── FIX DESPLEGABLES — opciones visibles en tema oscuro ── */
 select {
     background-color: #1e1e1e !important;
     color: #ffffff !important;
@@ -344,7 +318,6 @@ select:focus {
     box-shadow: 0 0 0 3px rgba(200,255,0,.12);
 }
 
-/* ── XP BAR ── */
 .xp-bar-container {
     display: flex;
     align-items: center;
@@ -399,7 +372,6 @@ select:focus {
     gap: 2px;
 }
 
-/* ── STREAK FIRE ── */
 .streak-circle.on-fire {
     border-color: #ff6b00 !important;
     box-shadow: 0 0 0 10px rgba(255,107,0,0.1), 0 0 30px rgba(255,107,0,0.3) !important;
@@ -410,7 +382,6 @@ select:focus {
     to   { box-shadow: 0 0 0 14px rgba(255,107,0,0.15), 0 0 40px rgba(255,107,0,0.4); }
 }
 
-/* ── TEMPORIZADOR ── */
 .timer-mode-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -528,7 +499,6 @@ select:focus {
     .timer-time      { font-size: 40px; }
 }
 
-/* ── PREDICCIÓN IA ── */
 .pred-objetivo-wrap {
     padding: 20px;
     background: rgba(255,255,255,0.03);
@@ -560,7 +530,6 @@ select:focus {
     color: #c8ff00;
 }
 
-/* TARJETA RESULTADO */
 .pred-card {
     padding: 24px;
     background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
@@ -623,7 +592,6 @@ select:focus {
     margin-top: 2px;
 }
 
-/* INSIGHTS */
 .insights-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -648,7 +616,6 @@ select:focus {
     .insights-grid      { grid-template-columns: 1fr; }
 }
 
-/* ── RUTINA ALEATORIA ── */
 .rng-filtros {
     display: flex; flex-direction: column; gap: 16px;
     padding: 20px;
@@ -734,7 +701,6 @@ select:focus {
     .rng-result-header .btn-primary { width: 100%; }
 }
 
-/* ── TIP DEL DÍA ── */
 .tip-card {
     padding: 16px 18px;
     background: linear-gradient(135deg, rgba(77,166,255,0.08), rgba(77,166,255,0.03));

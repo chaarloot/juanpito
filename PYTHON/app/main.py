@@ -3,16 +3,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 from app.core.database import engine
-from app.models import models
 from app.routers import usuarios
 from app.routers import alertas, auth, habitos, medicacion, metricas, planes, sesiones
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: crear tablas si no existen
-    models.Base.metadata.create_all(bind=engine)
-
+    # Note: tests manage DB creation themselves. Avoid creating tables here
+    # to prevent cross-engine contamination during test runs.
     yield
     # Shutdown (si se necesita limpieza)
 
@@ -25,7 +23,7 @@ app = FastAPI(
     redirect_slashes=False,
 )
 
-# ─── CORS ────────────────────────────────────────────────────────────────────
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -42,7 +40,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ─── ROUTERS ─────────────────────────────────────────────────────────────────
+# ROUTERS
 app.include_router(auth.router)
 app.include_router(usuarios.router)
 app.include_router(metricas.router)
@@ -51,6 +49,7 @@ app.include_router(medicacion.router)
 app.include_router(planes.router)
 app.include_router(alertas.router)
 app.include_router(sesiones.router)
+
 
 
 @app.get("/", tags=["Health"])

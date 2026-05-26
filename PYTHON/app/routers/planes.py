@@ -29,7 +29,7 @@ def _check_plan_access(plan: Plan, current_user: Usuario):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Acceso denegado")
 
 
-# ─── Planes ───────────────────────────────────────────────────────────────────
+# Planes
 
 @router.get("/", response_model=List[PlanOut])
 def list_planes(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: Usuario = Depends(get_current_user)):
@@ -41,6 +41,15 @@ def list_planes(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), 
         .all()
     )
 
+@router.get("/", response_model=List[PlanOut])
+def list_planes(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: Usuario = Depends(get_current_user)):
+    return (
+        db.query(Plan)
+        .filter(Plan.usuario_id == current_user.usuario_id)
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
 
 @router.get("/{plan_id}", response_model=PlanOut)
 def get_plan(plan_id: int, db: Session = Depends(get_db), current_user: Usuario = Depends(get_current_user)):
@@ -75,6 +84,3 @@ def delete_plan(plan_id: int, db: Session = Depends(get_db), current_user: Usuar
     _check_plan_access(plan, current_user)
     db.delete(plan)
     db.commit()
-
-
-# Notas de entrenador removidas: toda la funcionalidad asociada ha sido eliminada

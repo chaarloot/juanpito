@@ -4,7 +4,6 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     # Base de datos
     DATABASE_URL: str = "mysql+pymysql://root:@localhost:3306/VitaliaCJ"
-
     # JWT
     SECRET_KEY: str = "cambia_esto_en_produccion"
     ALGORITHM: str = "HS256"
@@ -12,12 +11,7 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
     # App
-    APP_NAME: str = "Vitalia CJ API"
     DEBUG: bool = False
-
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-
+    
 
 settings = Settings()

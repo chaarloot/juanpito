@@ -1,6 +1,4 @@
-"""
-routers/habitos.py – CRUD de hábitos y sus registros diarios.
-"""
+"""routers/habitos.py – CRUD de hábitos y sus registros diarios."""
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -24,7 +22,8 @@ def _get_habito_or_404(habito_id: int, usuario_id: int, db: Session) -> Habito:
     return h
 
 
-# ─── Hábitos ─────────────────────────────────────────────────────────────────
+# Hábitos
+
 
 @router.get("/", response_model=List[HabitoOut])
 def list_habitos(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: Usuario = Depends(get_current_user)):
@@ -62,7 +61,8 @@ def delete_habito(habito_id: int, db: Session = Depends(get_db), current_user: U
     db.commit()
 
 
-# ─── Registros de hábito ──────────────────────────────────────────────────────
+# Registros de hábito
+
 
 @router.get("/{habito_id}/registros", response_model=List[RegistroHabitoOut])
 def list_registros(habito_id: int, skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: Usuario = Depends(get_current_user)):
@@ -111,6 +111,7 @@ def delete_registro(habito_id: int, registro_id: int, db: Session = Depends(get_
     db.delete(r)
     db.commit()
 
+
 @router.get("/{habito_id}/estadisticas", response_model=dict)
 def obtener_estadisticas_habito(
     habito_id: int,
@@ -129,8 +130,10 @@ def obtener_estadisticas_habito(
     ).all()
 
     def to_date(v):
-        if isinstance(v, datetime): return v.date()
-        if isinstance(v, date):     return v
+        if isinstance(v, datetime):
+            return v.date()
+        if isinstance(v, date):
+            return v
         return datetime.fromisoformat(str(v)).date()
 
     registros_ordenados = sorted(registros, key=lambda r: to_date(r.fecha_registro))
@@ -150,7 +153,7 @@ def obtener_estadisticas_habito(
     racha_maxima = 0
     racha_temp = 1
     for i in range(1, len(registros_ordenados)):
-        dias_diff = (to_date(registros_ordenados[i].fecha_registro) - to_date(registros_ordenados[i-1].fecha_registro)).days
+        dias_diff = (to_date(registros_ordenados[i].fecha_registro) - to_date(registros_ordenados[i - 1].fecha_registro)).days
         if dias_diff == 1:
             racha_temp += 1
             racha_maxima = max(racha_maxima, racha_temp)
@@ -164,19 +167,20 @@ def obtener_estadisticas_habito(
     )
     porcentaje = (len(registros) / dias_esperados * 100) if dias_esperados > 0 else 0
     cantidades = [r.cantidad_completada for r in registros if r.cantidad_completada]
-    promedio   = sum(cantidades) / len(cantidades) if cantidades else 0
+    promedio = sum(cantidades) / len(cantidades) if cantidades else 0
 
     return {
-        "habito_id":                habito_id,
-        "nombre_habito":            habito.nombre,
-        "periodo_dias":             dias_atras,
-        "total_registros":          len(registros),
-        "porcentaje_cumplimiento":  round(porcentaje, 2),
-        "racha_actual":             racha_actual,
-        "racha_maxima":             racha_maxima,
+        "habito_id": habito_id,
+        "nombre_habito": habito.nombre,
+        "periodo_dias": dias_atras,
+        "total_registros": len(registros),
+        "porcentaje_cumplimiento": round(porcentaje, 2),
+        "racha_actual": racha_actual,
+        "racha_maxima": racha_maxima,
         "promedio_cantidad_diaria": round(promedio, 2),
-        "dias_completados":         len(registros),
+        "dias_completados": len(registros),
     }
+
 
 @router.get("/resumen/todos", response_model=list)
 def obtener_resumen_todos_habitos(
@@ -201,10 +205,13 @@ def obtener_resumen_todos_habitos(
             RegistroHabito.fecha_registro >= fecha_limite,
         ).all()
 
-        from datetime import datetime, timedelta
-        fecha_creacion = habito.fecha_creacion if hasattr(habito, 'fecha_creacion') else datetime.utcnow()
+        fecha_creacion = habito.fecha_creacion if hasattr(habito, "fecha_creacion") else datetime.utcnow()
         dias_vida = max(1, (datetime.utcnow() - fecha_creacion).days + 1)
-        dias_esperados = min(dias_atras, dias_vida) if habito.frecuencia == "diario" else (min(dias_atras, dias_vida) // 7 if habito.frecuencia == "semanal" else min(dias_atras, dias_vida) // 30)
+        dias_esperados = (
+            min(dias_atras, dias_vida)
+            if habito.frecuencia == "diario"
+            else (min(dias_atras, dias_vida) // 7 if habito.frecuencia == "semanal" else min(dias_atras, dias_vida) // 30)
+        )
         porcentaje_cumplimiento = (len(registros) / dias_esperados * 100) if dias_esperados > 0 else 0
 
         resumen.append({

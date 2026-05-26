@@ -1,5 +1,5 @@
 """
-routers/metricas.py – CRUD de métricas de salud.
+routers/metricas.py 3 CRUD de métricas de salud.
 """
 from typing import List
 
@@ -98,7 +98,6 @@ def obtener_resumen_metricas(
 ):
     """Obtener resumen de métricas de salud: promedios, máximos, mínimos"""
     from datetime import datetime, timedelta
-    from sqlalchemy import func
 
     fecha_limite = datetime.utcnow() - timedelta(days=dias_atras)
 

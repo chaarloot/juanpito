@@ -36,6 +36,20 @@ async def crear_sesion(
     db.refresh(nueva_sesion)
     return nueva_sesion
 
+@router.get("/", response_model=list[SesionRespuesta])
+async def listar_sesiones(
+    dias_atras: int = 30,
+    current_user: Usuario = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Listar sesiones de entrenamiento del usuario (últimos N días)"""
+    fecha_limite = datetime.utcnow() - timedelta(days=dias_atras)
+    sesiones = db.query(SesionEntrenamiento).filter(
+        SesionEntrenamiento.usuario_id == current_user.usuario_id,
+        SesionEntrenamiento.inicio >= fecha_limite,
+    ).order_by(SesionEntrenamiento.inicio.desc()).all()
+    return sesiones
+
 
 @router.get("/", response_model=list[SesionRespuesta])
 async def listar_sesiones(

@@ -91,7 +91,7 @@ select {
     cursor: text;
 }
 
-/* LOGIN PAGE */
+/* login*/
 .modal-overlay {
     display: flex;
     align-items: center;
@@ -250,7 +250,7 @@ select {
     min-height: 48px;
 }
 
-/* MAIN APP */
+/*main app*/
 .app {
     display: flex;
     height: 100vh;
@@ -261,7 +261,6 @@ select {
     display: none;
 }
 
-/* SIDEBAR */
 .sidebar {
     width: 250px;
     background: linear-gradient(180deg, rgba(24, 24, 24, 0.98), rgba(12, 12, 12, 0.98));
@@ -404,7 +403,7 @@ select {
     background: rgba(255, 68, 68, 0.2);
 }
 
-/* MAIN CONTENT */
+/*main content*/
 .main-content {
     flex: 1;
     display: flex;
@@ -564,7 +563,7 @@ select {
     background: rgba(200, 255, 0, 0.05);
 }
 
-/* RUTINAS */
+/*rutinas*/
 .routines-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -621,7 +620,7 @@ select {
     color: #000;
 }
 
-/* PROGRESO */
+/*progreso*/
 .progress-container {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -640,7 +639,7 @@ select {
     height: 300px !important;
 }
 
-/* CALENDARIO */
+/*calendario*/
 .calendar-container {
     padding: 20px;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
@@ -687,7 +686,7 @@ select {
     margin-top: 5px;
 }
 
-/* EJERCICIOS */
+/*ejercicios*/
 .exercises-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -739,7 +738,7 @@ select {
     color: #000;
 }
 
-/* ESTADÍSTICAS */
+/*estadisticas*/
 .stats-container {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -769,7 +768,7 @@ select {
     color: var(--color-primary);
 }
 
-/* HISTORIAL */
+/*historial*/
 .history-list {
     display: flex;
     flex-direction: column;
@@ -858,7 +857,6 @@ select {
     box-shadow: 0 8px 16px rgba(200, 255, 0, 0.3);
 }
 
-/* STATS GRID */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -938,7 +936,6 @@ select {
     border-radius: 2px;
 }
 
-/* CONTENT GRID */
 .content-grid {
     display: grid;
     grid-template-columns: 2fr 1fr;
@@ -1034,7 +1031,7 @@ select {
     font-weight: 600;
 }
 
-/* EXERCISES TABLE */
+/*ejercicios tabla*/
 .exercises-container {
     padding: 20px;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
@@ -1158,7 +1155,7 @@ tbody td {
     font-weight: bold;
 }
 
-/* SCROLLBAR */
+/*scroll*/
 ::-webkit-scrollbar {
     width: 8px;
 }
@@ -1176,7 +1173,7 @@ tbody td {
     background: rgba(200, 255, 0, 0.5);
 }
 
-/* RESPONSIVE */
+/*RESPONSIVE*/
 @media (max-width: 1400px) {
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);

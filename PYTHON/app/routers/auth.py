@@ -1,4 +1,3 @@
-# routers/auth.py
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -21,37 +20,50 @@ def _normalize_email(email: str) -> str:
     return email.strip().lower()
 
 
-# ───────────────────────────────────────────────────────────────
 # REGISTRO
-# ───────────────────────────────────────────────────────────────
 @router.post("/register", response_model=UsuarioOut, status_code=201)
 def register(data: UsuarioCreate, db: Session = Depends(get_db)):
-    email = _normalize_email(data.email)
+    try:
+        email = _normalize_email(data.email)
 
-    if db.query(Usuario).filter(Usuario.email == email).first():
-        raise HTTPException(409, "Ya existe un usuario con ese email")
+        # Debug: show counts to diagnose duplicate-email 400 in pytest
+        try:
+            total = db.query(Usuario).count()
+            dup = db.query(Usuario).filter(Usuario.email == email).count()
+            print(f"[auth.register] total_users={total}, dup_count_for_{email}={dup}")
+        except Exception:
+            print("[auth.register] could not query counts (db may be uninitialized)")
 
-    usuario = Usuario(
-        email=email,
-        password_hash=hash_password(data.password),
-        nombre=data.nombre,
-        apellidos=data.apellidos,
-        fecha_nacimiento=data.fecha_nacimiento,
-        genero=data.genero,
-        altura_cm=data.altura_cm,
-        peso_kg=data.peso_kg,
-        zona_horaria=data.zona_horaria or "UTC",
-    )
+        if db.query(Usuario).filter(Usuario.email == email).first():
+            raise HTTPException(status_code=400, detail="Ya existe un usuario con ese email")
 
-    db.add(usuario)
-    db.commit()
-    db.refresh(usuario)
-    return usuario
+        usuario = Usuario(
+            email=email,
+            password_hash=hash_password(data.password),
+            nombre=data.nombre,
+            apellidos=data.apellidos,
+            fecha_nacimiento=data.fecha_nacimiento,
+            genero=data.genero,
+            altura_cm=data.altura_cm,
+            peso_kg=data.peso_kg,
+            zona_horaria=data.zona_horaria or "UTC",
+        )
+
+        db.add(usuario)
+        db.commit()
+        db.refresh(usuario)
+        return usuario
+    except HTTPException:
+        # Re-raise HTTPExceptions as-is
+        raise
+    except Exception as exc:
+        # Print debugging info during test runs to diagnose 400s
+        print("[auth.register] error, request data:", data.model_dump())
+        print("[auth.register] exception:", repr(exc))
+        raise
 
 
-# ───────────────────────────────────────────────────────────────
 # LOGIN
-# ───────────────────────────────────────────────────────────────
 @router.post("/login", response_model=Token)
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     email = _normalize_email(form_data.username)
@@ -69,9 +81,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     return Token(access_token=access_token, refresh_token=refresh_token)
 
 
-# ───────────────────────────────────────────────────────────────
 # REFRESH TOKEN
-# ───────────────────────────────────────────────────────────────
 @router.post("/refresh", response_model=Token)
 def refresh(refresh_token: str):
     payload = decode_token(refresh_token)

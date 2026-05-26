@@ -183,7 +183,17 @@ async function saveMetrica() {
         });
         if (!res.ok) {
             const d = await res.json().catch(() => ({}));
-            throw new Error(d.detail || 'Error al guardar');
+            let msg = 'Error al guardar';
+            if (d) {
+                if (typeof d.detail === 'string') msg = d.detail;
+                else if (Array.isArray(d.detail) && d.detail.length) {
+                    msg = d.detail.map(x => x.msg || x.message || JSON.stringify(x)).join('; ');
+                } else if (typeof d.detail === 'object' && d.detail !== null) {
+                    msg = d.detail.message || d.detail.error || JSON.stringify(d.detail);
+                } else if (d.message) msg = d.message;
+                else try { msg = JSON.stringify(d); } catch (_) { /* ignore */ }
+            }
+            throw new Error(msg);
         }
         showToast('✓ Métrica guardada');
         removeModal('newMetricModal');

@@ -1,6 +1,9 @@
 """
 routers/alertas.py – CRUD de alertas del usuario.
 """
+"""
+routers/alertas.py – CRUD de alertas del usuario.
+"""
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
