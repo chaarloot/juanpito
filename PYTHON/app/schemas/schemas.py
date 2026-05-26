@@ -68,6 +68,7 @@ class UsuarioUpdate(BaseModel):
     altura_cm: Optional[float] = None
     peso_kg: Optional[float] = None
     zona_horaria: Optional[str] = None
+    password: Optional[str] = None 
 
 
 # 🔥 **AQUÍ ESTABA EL PROBLEMA → ESTA CLASE FALTABA**

@@ -16,10 +16,12 @@ async function loadDashboard() {
     await renderWeeklyChart();
     await loadRecentSessions();
     renderXP();
+    renderTipDelDia();
 }
 
 // ── Semana ────────────────────────────────────────────────────
 function setWeekInfo() {
+    // Fecha actual real: 26 mayo 2026
     const now = new Date();
     const weekStart = new Date(now);
     weekStart.setDate(now.getDate() - ((now.getDay() + 6) % 7));
@@ -27,6 +29,19 @@ function setWeekInfo() {
     weekEnd.setDate(weekStart.getDate() + 6);
     const opts = { month: 'long', day: 'numeric' };
     setEl('weekInfo', `Semana del ${weekStart.toLocaleDateString('es-ES', opts)} al ${weekEnd.toLocaleDateString('es-ES', opts)}`);
+}
+
+// ── Fecha local YYYY-MM-DD (sin UTC) ─────────────────────────
+function localDateStr(date) {
+    const d = new Date(date);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+}
+
+function todayStr() {
+    return localDateStr(new Date());
 }
 
 // ── Stats ─────────────────────────────────────────────────────
@@ -48,39 +63,53 @@ async function loadStats() {
     setEl('streakDays', streak);
     setEl('streakNum',  streak);
 
-    // Fuego animado si racha > 3
     const streakCircle = document.getElementById('streakCircle');
     const streakMsg    = document.getElementById('streakMsg');
-    if (streakCircle && streak > 3) {
-        streakCircle.classList.add('on-fire');
+    if (streakCircle) {
+        streakCircle.classList.remove('on-fire');
+        if (streak > 3) streakCircle.classList.add('on-fire');
     }
     if (streakMsg) {
-        if (streak === 0) {
-            streakMsg.innerHTML = '<span style="color:#888">¡Empieza hoy tu racha!</span>';
-        } else if (streak >= 7) {
-            streakMsg.innerHTML = '<span class="percentage">🔥 ¡Racha épica! Sigue así</span>';
-        } else if (streak >= 3) {
-            streakMsg.innerHTML = '<span class="percentage">🔥 ¡Estás en racha!</span>';
-        } else {
-            streakMsg.innerHTML = '<span class="percentage">💪 ¡Sigue entrenando!</span>';
-        }
+        if      (streak === 0) streakMsg.innerHTML = '<span style="color:#888">¡Empieza hoy tu racha!</span>';
+        else if (streak >= 7)  streakMsg.innerHTML = '<span class="percentage">🔥 ¡Racha épica! Sigue así</span>';
+        else if (streak >= 3)  streakMsg.innerHTML = '<span class="percentage">🔥 ¡Estás en racha!</span>';
+        else if (streak === 1) streakMsg.innerHTML = '<span class="percentage">💪 ¡Primer día, sigue mañana!</span>';
+        else                   streakMsg.innerHTML = '<span class="percentage">💪 ¡Sigue entrenando!</span>';
     }
 }
 
+// ── Racha — usa fecha LOCAL para evitar bug UTC ───────────────
 async function calcularRacha() {
     try {
         const res = await authFetch(`${API_URL}/sesiones/?dias_atras=90`);
         if (!res.ok) return 0;
         const sesiones = await res.json();
-        const dias = new Set(sesiones.map(s => new Date(s.inicio).toISOString().split('T')[0]));
+
+        // Usar fecha LOCAL (no UTC) para evitar el bug de zona horaria
+        const dias = new Set(sesiones.map(s => localDateStr(s.inicio)));
+
+        // Añadir workouts locales
         const local = JSON.parse(localStorage.getItem('vitaliaLocalWorkouts') || '[]');
-        local.forEach(w => dias.add(w.date.split('T')[0]));
+        local.forEach(w => dias.add(localDateStr(w.date)));
+
+        const hoyStr = todayStr();
+
+        // Si no entrenó hoy, la racha es 0
+        if (!dias.has(hoyStr)) return 0;
+
+        // Contar días consecutivos hacia atrás desde hoy
         let racha = 0;
-        const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+        const hoy = new Date();
+        hoy.setHours(0, 0, 0, 0);
+
         for (let i = 0; i < 365; i++) {
-            const d = new Date(hoy); d.setDate(hoy.getDate() - i);
-            if (dias.has(d.toISOString().split('T')[0])) racha++;
-            else if (i > 0) break;
+            const d = new Date(hoy);
+            d.setDate(hoy.getDate() - i);
+            if (dias.has(localDateStr(d))) {
+                racha++;
+            } else if (i > 0) {
+                break;
+            }
         }
         return racha;
     } catch (_) { return 0; }
@@ -88,60 +117,53 @@ async function calcularRacha() {
 
 // ── XP / NIVELES ──────────────────────────────────────────────
 const XP_LEVELS = [
-    { nivel: 1,  titulo: 'Principiante',  xpNeeded: 100  },
-    { nivel: 2,  titulo: 'Aprendiz',      xpNeeded: 250  },
-    { nivel: 3,  titulo: 'Atleta',        xpNeeded: 500  },
-    { nivel: 4,  titulo: 'Guerrero',      xpNeeded: 1000 },
-    { nivel: 5,  titulo: 'Campeón',       xpNeeded: 2000 },
-    { nivel: 6,  titulo: 'Élite',         xpNeeded: 3500 },
-    { nivel: 7,  titulo: 'Leyenda',       xpNeeded: 5000 },
-    { nivel: 8,  titulo: 'Inmortal',      xpNeeded: 7500 },
-    { nivel: 9,  titulo: 'Titán',         xpNeeded: 10000},
-    { nivel: 10, titulo: 'DIOS del GYM',  xpNeeded: 99999},
+    { nivel: 1,  titulo: 'Principiante',  xpNeeded: 100   },
+    { nivel: 2,  titulo: 'Aprendiz',      xpNeeded: 250   },
+    { nivel: 3,  titulo: 'Atleta',        xpNeeded: 500   },
+    { nivel: 4,  titulo: 'Guerrero',      xpNeeded: 1000  },
+    { nivel: 5,  titulo: 'Campeón',       xpNeeded: 2000  },
+    { nivel: 6,  titulo: 'Élite',         xpNeeded: 3500  },
+    { nivel: 7,  titulo: 'Leyenda',       xpNeeded: 5000  },
+    { nivel: 8,  titulo: 'Inmortal',      xpNeeded: 7500  },
+    { nivel: 9,  titulo: 'Titán',         xpNeeded: 10000 },
+    { nivel: 10, titulo: 'DIOS del GYM',  xpNeeded: 99999 },
 ];
 
 async function renderXP() {
     const container = document.getElementById('xpContainer');
     if (!container) return;
 
-    // Calcular XP total basado en sesiones reales
     let totalXP = 0;
     try {
         const res = await authFetch(`${API_URL}/sesiones/stats/resumen?dias_atras=365`);
         if (res.ok) {
             const d = await res.json();
-            // 10 XP por sesión + 1 XP por cada 10 calorías + 2 XP por minuto/10
             totalXP += (d.total_entrenamientos || 0) * 10;
             totalXP += Math.floor((d.total_calorias || 0) / 10);
             totalXP += Math.floor((d.total_minutos || 0) / 10) * 2;
         }
     } catch (_) {}
 
-    // Sumar locales
     const local = JSON.parse(localStorage.getItem('vitaliaLocalWorkouts') || '[]');
     totalXP += local.length * 10;
     totalXP += local.reduce((a, w) => a + Math.floor((w.calories || 0) / 10), 0);
 
-    // Calcular nivel actual
-    let nivelActual = XP_LEVELS[0];
+    let nivelActual    = XP_LEVELS[0];
     let nivelSiguiente = XP_LEVELS[1];
-    let xpAcumulado = 0;
+    let xpAcumulado    = 0;
 
     for (let i = 0; i < XP_LEVELS.length; i++) {
         if (totalXP >= XP_LEVELS[i].xpNeeded) {
-            nivelActual = XP_LEVELS[i];
+            nivelActual    = XP_LEVELS[i];
             nivelSiguiente = XP_LEVELS[i + 1] || XP_LEVELS[i];
-            xpAcumulado = XP_LEVELS[i].xpNeeded;
-        } else {
-            break;
-        }
+            xpAcumulado    = XP_LEVELS[i].xpNeeded;
+        } else break;
     }
 
-    const xpEnNivel    = totalXP - xpAcumulado;
+    const xpEnNivel       = totalXP - xpAcumulado;
     const xpParaSiguiente = nivelSiguiente.xpNeeded - xpAcumulado;
-    const porcentaje   = Math.min((xpEnNivel / xpParaSiguiente) * 100, 100);
+    const porcentaje      = Math.min((xpEnNivel / xpParaSiguiente) * 100, 100);
 
-    // Renderizar
     container.innerHTML = `
         <div class="xp-bar-container">
             <div class="xp-left">
@@ -158,27 +180,47 @@ async function renderXP() {
         </div>`;
 }
 
-// ── Gráfico semanal ───────────────────────────────────────────
+// ── Gráfico semanal — usa fecha LOCAL ────────────────────────
 async function renderWeeklyChart() {
     const canvas = document.getElementById('weeklyChart');
     if (!canvas) return;
     if (weeklyChartInstance) weeklyChartInstance.destroy();
 
     const data = [0, 0, 0, 0, 0, 0, 0];
+
+    // Calcular inicio de semana actual (lunes) en hora local
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    const diaSemana = (hoy.getDay() + 6) % 7; // lunes=0 ... domingo=6
+    const lunesActual = new Date(hoy);
+    lunesActual.setDate(hoy.getDate() - diaSemana);
+    const domingoActual = new Date(lunesActual);
+    domingoActual.setDate(lunesActual.getDate() + 6);
+    domingoActual.setHours(23, 59, 59, 999);
+
     try {
         const res = await authFetch(`${API_URL}/sesiones/?dias_atras=7`);
         if (res.ok) {
             const sesiones = await res.json();
             sesiones.forEach(s => {
-                const idx = (new Date(s.inicio).getDay() + 6) % 7;
-                data[idx] += s.duracion_minutos || 0;
+                const d = new Date(s.inicio);
+                // Solo sesiones de esta semana (lunes a domingo)
+                if (d >= lunesActual && d <= domingoActual) {
+                    const idx = (d.getDay() + 6) % 7; // lunes=0 ... domingo=6
+                    data[idx] += s.duracion_minutos || 0;
+                }
             });
         }
     } catch (_) {}
+
+    // Añadir workouts locales de esta semana
     const local = JSON.parse(localStorage.getItem('vitaliaLocalWorkouts') || '[]');
     local.forEach(w => {
-        const idx = (new Date(w.date).getDay() + 6) % 7;
-        data[idx] += parseWorkoutMinutes(w.duration);
+        const d = new Date(w.date);
+        if (d >= lunesActual && d <= domingoActual) {
+            const idx = (d.getDay() + 6) % 7;
+            data[idx] += parseWorkoutMinutes(w.duration);
+        }
     });
 
     weeklyChartInstance = new Chart(canvas.getContext('2d'), {
@@ -246,6 +288,56 @@ async function loadRecentSessions() {
     } catch (_) {
         container.innerHTML = '<p style="color:#888;text-align:center;padding:30px">No se pudieron cargar las sesiones</p>';
     }
+}
+
+// ── TIP DEL DÍA ───────────────────────────────────────────────
+const TIPS = [
+    { cat: '💪 Técnica',      tip: 'En el press de banca, mantén los omóplatos retraídos y los pies apoyados en el suelo para mayor estabilidad y fuerza.' },
+    { cat: '🥗 Nutrición',    tip: 'Consume proteína dentro de los 30-60 minutos post-entreno para maximizar la síntesis muscular.' },
+    { cat: '😴 Recuperación', tip: 'El músculo no crece durante el entrenamiento, sino durante el descanso. Duerme entre 7 y 9 horas.' },
+    { cat: '💧 Hidratación',  tip: 'Bebe al menos 500ml de agua 2 horas antes de entrenar. La deshidratación reduce el rendimiento hasta un 20%.' },
+    { cat: '💪 Técnica',      tip: 'En la sentadilla, empuja las rodillas hacia fuera y mantén el pecho arriba para proteger la espalda baja.' },
+    { cat: '🥗 Nutrición',    tip: 'Los carbohidratos no son el enemigo: son el combustible principal del músculo durante el ejercicio intenso.' },
+    { cat: '😴 Recuperación', tip: 'Si llevas más de 3 días seguidos entrenando el mismo grupo muscular, tu rendimiento bajará. Planifica el descanso.' },
+    { cat: '🧠 Mental',       tip: 'La visualización del ejercicio antes de ejecutarlo mejora la activación muscular y la técnica.' },
+    { cat: '💪 Técnica',      tip: 'En el peso muerto, la barra debe rozar las piernas durante todo el recorrido para mantener el centro de gravedad.' },
+    { cat: '🥗 Nutrición',    tip: 'Come grasas saludables (aguacate, frutos secos, aceite de oliva). Son esenciales para la producción de testosterona.' },
+    { cat: '😴 Recuperación', tip: 'Los estiramientos estáticos post-entreno reducen las agujetas hasta un 40% si se mantienen más de 30 segundos.' },
+    { cat: '💧 Hidratación',  tip: 'Si tu orina es oscura, estás deshidratado. El color ideal es amarillo pálido.' },
+    { cat: '💪 Técnica',      tip: 'En las dominadas, inicia el movimiento deprimiendo las escápulas, no tirando con los brazos.' },
+    { cat: '🥗 Nutrición',    tip: 'El ayuno intermitente puede funcionar, pero no es mágico. Lo que más importa es el déficit calórico total.' },
+    { cat: '🧠 Mental',       tip: 'Llevar un registro de tus entrenamientos aumenta la adherencia al programa en más de un 60%.' },
+    { cat: '💪 Técnica',      tip: 'Para aislar mejor el bíceps en el curl, gira la muñeca hacia fuera al subir (supinación).' },
+    { cat: '😴 Recuperación', tip: 'Un masaje de 10 minutos con foam roller después del entrenamiento mejora la recuperación muscular.' },
+    { cat: '🥗 Nutrición',    tip: 'La creatina monohidrato es el suplemento con mayor evidencia científica para mejorar la fuerza y el volumen muscular.' },
+    { cat: '💧 Hidratación',  tip: 'Durante el ejercicio, bebe 150-250ml de agua cada 15-20 minutos para mantener el rendimiento.' },
+    { cat: '🧠 Mental',       tip: 'La constancia supera siempre a la intensidad. Tres sesiones semanales durante un año son mejores que un mes intensivo.' },
+    { cat: '💪 Técnica',      tip: 'En el press militar, activa el core y no arquees la espalda baja. Imagina que empujas el suelo con los pies.' },
+    { cat: '🥗 Nutrición',    tip: 'Come al menos 1.6g de proteína por kg de peso corporal al día si tu objetivo es ganar músculo.' },
+    { cat: '😴 Recuperación', tip: 'El sueño profundo (fase REM) es cuando más hormona de crecimiento se libera. Prioriza la calidad del sueño.' },
+    { cat: '💪 Técnica',      tip: 'En el hip thrust, aprieta los glúteos en el punto más alto y mantén 1 segundo antes de bajar.' },
+    { cat: '🧠 Mental',       tip: 'Si no tienes ganas de entrenar, empieza con solo 5 minutos. El 90% de las veces acabarás la sesión completa.' },
+    { cat: '🥗 Nutrición',    tip: 'Los omega-3 (pescado azul, nueces) reducen la inflamación muscular y mejoran la recuperación.' },
+    { cat: '💧 Hidratación',  tip: 'Evita bebidas con cafeína las 6 horas antes de dormir. Interfieren con el sueño profundo.' },
+    { cat: '💪 Técnica',      tip: 'La fase excéntrica (bajar el peso) es tan importante como la concéntrica. Hazla en 2-3 segundos.' },
+    { cat: '🧠 Mental',       tip: 'Cambiar la rutina cada 6-8 semanas evita el estancamiento y mantiene la motivación alta.' },
+    { cat: '😴 Recuperación', tip: 'Un baño frío de 10-15 minutos a 10-15°C después del entreno reduce significativamente el dolor muscular.' },
+];
+
+function renderTipDelDia() {
+    const container = document.getElementById('tipDelDiaContainer');
+    if (!container) return;
+    const hoy     = new Date();
+    const diaAnyo = Math.floor((hoy - new Date(hoy.getFullYear(), 0, 0)) / 86400000);
+    const tip     = TIPS[diaAnyo % TIPS.length];
+    container.innerHTML = `
+        <div class="tip-card">
+            <div class="tip-header">
+                <span>${tip.cat}</span>
+                <span class="tip-badge">Tip del día</span>
+            </div>
+            <p class="tip-body">${tip.tip}</p>
+        </div>`;
 }
 
 // ── Modal nuevo entrenamiento ─────────────────────────────────

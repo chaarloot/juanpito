@@ -733,3 +733,35 @@ select:focus {
     .rng-result-header { flex-direction: column; }
     .rng-result-header .btn-primary { width: 100%; }
 }
+
+/* ── TIP DEL DÍA ── */
+.tip-card {
+    padding: 16px 18px;
+    background: linear-gradient(135deg, rgba(77,166,255,0.08), rgba(77,166,255,0.03));
+    border: 1px solid rgba(77,166,255,0.25);
+    border-radius: var(--radius);
+}
+.tip-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #4da6ff;
+    letter-spacing: 0.5px;
+}
+.tip-badge {
+    padding: 3px 8px;
+    background: rgba(77,166,255,0.15);
+    border: 1px solid rgba(77,166,255,0.3);
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    color: #4da6ff;
+}
+.tip-body {
+    font-size: 13px;
+    color: #d0d0d0;
+    line-height: 1.7;
+}

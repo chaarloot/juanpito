@@ -52,8 +52,8 @@
                 </div>
             </div>
 
-            <!-- GRÁFICO + RACHA -->
-            <div class="content-grid">
+            <!-- GRÁFICO + RACHA + TIP -->
+            <div class="content-grid" style="grid-template-columns:2fr 1fr">
                 <div class="chart-container">
                     <div class="chart-header">
                         <h3>ACTIVIDAD SEMANAL</h3>
@@ -64,16 +64,22 @@
                     </div>
                 </div>
 
-                <div class="streak-container">
-                    <div class="chart-header">
-                        <h3>RACHA ACTUAL</h3>
-                        <span class="badge-active" id="streakBadge">Activa</span>
+                <div style="display:flex;flex-direction:column;gap:16px">
+                    <!-- RACHA -->
+                    <div class="streak-container" style="flex:1">
+                        <div class="chart-header">
+                            <h3>RACHA ACTUAL</h3>
+                            <span class="badge-active" id="streakBadge">Activa</span>
+                        </div>
+                        <div class="streak-circle" id="streakCircle">
+                            <div class="streak-number" id="streakNum">—</div>
+                            <div class="streak-label">DÍAS</div>
+                        </div>
+                        <div class="streak-info" id="streakMsg" style="text-align:center;margin-top:12px"></div>
                     </div>
-                    <div class="streak-circle" id="streakCircle">
-                        <div class="streak-number" id="streakNum">—</div>
-                        <div class="streak-label">DÍAS</div>
-                    </div>
-                    <div class="streak-info" id="streakMsg" style="text-align:center;margin-top:12px"></div>
+
+                    <!-- TIP DEL DÍA -->
+                    <div id="tipDelDiaContainer"></div>
                 </div>
             </div>
 
@@ -89,13 +95,24 @@
             </div>
 
             <!-- ACCESOS RÁPIDOS -->
-            <div class="quick-access-grid" style="margin-top:24px">
-                <a href="habitos.html"    class="quick-card"><span>📋</span>Mis Hábitos</a>
-                <a href="metricas.html"   class="quick-card"><span>📏</span>Métricas</a>
-                <a href="medicacion.html" class="quick-card"><span>💊</span>Medicación</a>
-                <a href="progreso.html"   class="quick-card"><span>📊</span>Progreso</a>
-                <a href="calendario.html" class="quick-card"><span>📅</span>Calendario</a>
-                <a href="ejercicios.html" class="quick-card"><span>💪</span>Ejercicios</a>
+            <div style="margin-top:24px">
+                <div class="exercises-header" style="margin-bottom:16px">
+                    <h3>ACCESOS RÁPIDOS</h3>
+                </div>
+                <div class="quick-access-grid">
+                    <a href="habitos.html"         class="quick-card"><span>📋</span>Mis Hábitos</a>
+                    <a href="metricas.html"         class="quick-card"><span>📏</span>Métricas</a>
+                    <a href="medicacion.html"       class="quick-card"><span>💊</span>Medicación</a>
+                    <a href="progreso.html"         class="quick-card"><span>📊</span>Progreso</a>
+                    <a href="calendario.html"       class="quick-card"><span>📅</span>Calendario</a>
+                    <a href="ejercicios.html"       class="quick-card"><span>💪</span>Ejercicios</a>
+                    <a href="historial.html"        class="quick-card"><span>📜</span>Historial</a>
+                    <a href="estadisticas.html"     class="quick-card"><span>📈</span>Estadísticas</a>
+                    <a href="temporizador.html"     class="quick-card"><span>⏱</span>Temporizador</a>
+                    <a href="prediccion.html"       class="quick-card"><span>📉</span>Predicción</a>
+                    <a href="rutina-aleatoria.html" class="quick-card"><span>🔀</span>Rutina Aleatoria</a>
+                    <a href="perfil.html"           class="quick-card"><span>👤</span>Mi Perfil</a>
+                </div>
             </div>
 
         </div>

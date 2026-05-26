@@ -57,8 +57,14 @@ def update_me(
     db: Session = Depends(get_db),
     current_user: Usuario = Depends(get_current_user),
 ):
-    """Actualiza el perfil del usuario autenticado."""
-    for field, value in data.dict(exclude_unset=True).items():
+    from app.core.security import hash_password
+
+    update_data = data.dict(exclude_unset=True)
+
+    if "password" in update_data:
+        current_user.password_hash = hash_password(update_data.pop("password"))
+
+    for field, value in update_data.items():
         setattr(current_user, field, value)
 
     db.commit()

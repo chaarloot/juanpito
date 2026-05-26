@@ -85,13 +85,13 @@ const SIDEBAR_LINKS = [
         { key: 'medicacion',   icon: '💊', label: 'Medicación'  },
     ]},
     { section: 'ENTRENAMIENTO', links: [
-        { key: 'ejercicios',   icon: '💪', label: 'Ejercicios'    },
-        { key: 'estadisticas', icon: '📈', label: 'Estadísticas'  },
-        { key: 'historial',    icon: '⏱️', label: 'Historial'     },
-        { key: 'perfil',       icon: '👤', label: 'Mi Perfil'     },
-        { key: 'temporizador', icon: '⏱️', label: 'Temporizador'  },
-        { key: 'prediccion',     icon: '🤖', label: 'Predicción IA'    },
-        { key: 'rutina-aleatoria', icon: '🎲', label: 'Rutina Aleatoria' },
+        { key: 'ejercicios',       icon: '💪', label: 'Ejercicios'       },
+        { key: 'estadisticas',     icon: '📈', label: 'Estadísticas'     },
+        { key: 'historial',        icon: '📜', label: 'Historial'        },
+        { key: 'temporizador',     icon: '⏱', label: 'Temporizador'     },
+        { key: 'prediccion',       icon: '📉', label: 'Predicción'       },
+        { key: 'rutina-aleatoria', icon: '🔀', label: 'Rutina Aleatoria' },
+        { key: 'perfil',           icon: '👤', label: 'Mi Perfil'        },
     ]},
 ];
 
