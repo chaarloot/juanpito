@@ -1,5 +1,6 @@
 // CONFIGURACIÓN
-const API_URL = 'http://127.0.0.1:8000';
+const API_URL = window.API_URL || 'https://vitalia-juanpito-backend.onrender.com';
+window.API_URL = API_URL;
 let authToken = localStorage.getItem('token');
 let refreshToken = localStorage.getItem('refreshToken');
 

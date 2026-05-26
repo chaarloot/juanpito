@@ -1,0 +1,1 @@
+window.API_URL = 'https://vitalia-juanpito-backend.onrender.com';

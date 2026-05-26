@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "echo \"window.API_URL = '${API_URL}';\" > config.js"
+    "build": "node -e \"const fs=require('fs'); const api=process.env.API_URL||'https://vitalia-juanpito-backend.onrender.com'; const content='window.API_URL = ' + JSON.stringify(api) + ';\\n'; fs.writeFileSync('config.js', content); fs.writeFileSync('../config.js', content);\""
   }
 }
