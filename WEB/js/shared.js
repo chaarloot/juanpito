@@ -3,7 +3,7 @@
 // Funciones comunes a todas las páginas
 // ============================================================
 
-const API_URL = 'http://127.0.0.1:8000';
+const API_URL = (window && window.API_URL) ? window.API_URL : 'http://127.0.0.1:8000';
 
 // ── Auth helpers ─────────────────────────────────────────────
 function getToken()        { return localStorage.getItem('token'); }
@@ -55,7 +55,7 @@ async function authFetch(url, options = {}) {
 
 // Exponer globalmente
 window.authFetch = authFetch;
-window.API_URL   = API_URL;
+if (!window.API_URL) window.API_URL = API_URL;
 
 // ── Page name → path mapping ─────────────────────────────────
 const PAGE_MAP = {
