@@ -126,7 +126,7 @@ function generarRutina() {
 
     setTimeout(() => {
         _doGenerar();
-        btn.textContent = '🎲 Generar otra';
+        btn.textContent = '🔀 Generar otra';
         btn.disabled = false;
     }, 600);
 }

@@ -21,9 +21,92 @@ function saveAuthSession(data) {
 
 function setAuthMessage(target, message, type = 'error') {
     if (!target) return;
-    target.textContent = message;
+
+    try { console.debug('setAuthMessage called', { targetId: target.id || null, type: typeof message, message }); } catch (e) {}
+
+    let textoLimpio = '';
+
+    // Si nos llega una cadena que contiene HTML + JSON (p. ej. DevTools copiado), intentar extraer JSON
+    if (typeof message === 'string' && /<[^>]+>/.test(message)) {
+        // buscar un objeto JSON o array JSON dentro del texto
+        const startObj = message.indexOf('{');
+        const endObj = message.lastIndexOf('}');
+        const startArr = message.indexOf('[');
+        const endArr = message.lastIndexOf(']');
+
+        if (startObj !== -1 && endObj !== -1 && endObj > startObj) {
+            const jsonPart = message.slice(startObj, endObj + 1);
+            try { message = JSON.parse(jsonPart); } catch (e) { message = message.replace(/<[^>]*>/g, '').trim(); }
+        } else if (startArr !== -1 && endArr !== -1 && endArr > startArr) {
+            const jsonPart = message.slice(startArr, endArr + 1);
+            try { message = JSON.parse(jsonPart); } catch (e) { message = message.replace(/<[^>]*>/g, '').trim(); }
+        } else {
+            // eliminar etiquetas HTML y dejar sólo texto
+            message = message.replace(/<[^>]*>/g, '').trim();
+        }
+    }
+
+    // 1. Si el mensaje está vacío o es nulo
+    if (!message) {
+        textoLimpio = '';
+    }
+    // 2. Si lo que llega es un Array de errores (múltiples campos)
+    else if (Array.isArray(message)) {
+        textoLimpio = message.map(err => {
+            // cadenas simples
+            if (typeof err === 'string') return err;
+
+            // arrays dentro del array
+            if (Array.isArray(err)) return err.map(String).join(' | ');
+
+            // objetos: intentar extraer keys útiles
+            if (typeof err === 'object' && err !== null) {
+                // FastAPI-style: {loc: [...], msg: '...', type: '...'} -> prefijar campo
+                const campo = err.loc && err.loc[1] ? err.loc[1] : null;
+                if (campo && err.msg) {
+                    const campoEsp = campo === 'password' ? 'Contraseña' : campo === 'nombre' ? 'Nombre' : campo === 'apellidos' ? 'Apellido' : campo === 'email' ? 'Correo' : campo;
+                    const localized = localizeMessage(err.msg, campo);
+                    const lower = (localized || '').toLowerCase();
+                    if (lower.startsWith(campoEsp.toLowerCase()) || lower.startsWith('correo') || lower.startsWith('contraseña') || lower.startsWith('nombre') || lower.startsWith('apellido')) return localized;
+                    return `${campoEsp}: ${localized}`;
+                }
+
+                if (err.msg) return localizeMessage(err.msg, (err.loc && err.loc[1]) ? err.loc[1] : null);
+                if (err.message) return String(err.message);
+                if (err.detail) {
+                    if (typeof err.detail === 'string') return err.detail;
+                    if (Array.isArray(err.detail)) return err.detail.map(d => formatDetailItem(d)).join(' | ');
+                    return JSON.stringify(err.detail);
+                }
+
+                // Fallback: serializar el objeto para no mostrar [object Object]
+                try { return JSON.stringify(err); } catch (e) { return String(err); }
+            }
+
+            return String(err);
+        }).join(' | ');
+    }
+    // 3. Si lo que llega es un objeto
+    else if (typeof message === 'object' && message !== null) {
+        if (message.message) {
+            textoLimpio = String(message.message);
+        } else if (message.detail) {
+            if (typeof message.detail === 'string') textoLimpio = message.detail;
+            else if (Array.isArray(message.detail)) textoLimpio = message.detail.map(d => formatDetailItem(d)).join(' | ');
+            else textoLimpio = JSON.stringify(message.detail);
+        } else {
+            textoLimpio = JSON.stringify(message);
+        }
+    }
+    // 4. Si ya es una cadena de texto estándar
+    else {
+        textoLimpio = String(message);
+    }
+
+    // Tu lógica visual original para pintar el recuadro rojo
+    target.textContent = textoLimpio;
     target.classList.remove('error', 'success');
-    if (message) {
+    if (textoLimpio) {
         target.classList.add(type);
     }
 }
@@ -113,52 +196,6 @@ window.saveAuthSession = saveAuthSession;
 window.showLoginScreen = showLoginScreen;
 window.showMainApp = showMainApp;
 
-// Evento: Enviar formulario de login
-loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('loginEmail').value.trim().toLowerCase();
-    const password = document.getElementById('loginPassword').value;
-    const submitButton = loginForm.querySelector('button[type="submit"]');
-
-    setAuthMessage(loginMessage, '');
-    setFormLoading(loginForm, true, 'Entrando...');
-
-    try {
-        const response = await fetch(`${API_URL}/auth/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `username=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
-        });
-
-        if (!response.ok) {
-            let errorMessage = 'Email o contraseña incorrectos';
-            try {
-                const errorData = await response.json();
-                errorMessage = errorData.detail || errorMessage;
-            } catch (_) {
-                const fallbackText = await response.text();
-                if (fallbackText) errorMessage = fallbackText;
-            }
-            throw new Error(errorMessage);
-        }
-
-        const data = await response.json();
-        saveAuthSession(data);
-        showMainApp();
-        setAuthMessage(loginMessage, 'Sesión iniciada correctamente', 'success');
-        
-        await loadUserData();
-    } catch (error) {
-        setAuthMessage(loginMessage, error.message || 'No se pudo iniciar sesión');
-        console.error('Login error:', error);
-    } finally {
-        setFormLoading(loginForm, false, 'Iniciar Sesión');
-        if (submitButton) submitButton.dataset.defaultText = 'Iniciar Sesión';
-    }
-});
-
 // Evento: Enviar formulario de registro
 registerForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -166,7 +203,7 @@ registerForm.addEventListener('submit', async (e) => {
     const apellidos = document.getElementById('regLastname').value.trim();
     const email = document.getElementById('regEmail').value.trim().toLowerCase();
     const password = document.getElementById('regPassword').value;
-    const submitButton = registerForm.querySelector('button[type="submit"]');
+    const submitButton = registerForm.querySelector('button[type=\"submit\"]');
 
     setAuthMessage(registerMessage, '');
     setFormLoading(registerForm, true, 'Creando...');
@@ -194,22 +231,54 @@ registerForm.addEventListener('submit', async (e) => {
             let errorMessage = 'Error en el registro';
             try {
                 const errorData = await response.json();
-                errorMessage = errorData.detail || errorMessage;
+                
+                // Si es un error 422 de FastAPI (Validación de esquemas Pydantic)
+                if (response.status === 422 && errorData.detail && Array.isArray(errorData.detail)) {
+                    errorMessage = errorData.detail.map(err => {
+                        const campo = err.loc && err.loc[1] ? err.loc[1] : 'dato';
+                        const campoEsp = campo === 'password' ? 'Contraseña' : 
+                                         campo === 'nombre' ? 'Nombre' :
+                                         campo === 'apellidos' ? 'Apellido' :
+                                         campo === 'email' ? 'Correo' : campo;
+                        const localized = localizeMessage(err.msg, campo);
+                        const lower = (localized || '').toLowerCase();
+                        if (lower.startsWith(campoEsp.toLowerCase()) || lower.startsWith('correo') || lower.startsWith('contraseña') || lower.startsWith('nombre') || lower.startsWith('apellido')) return localized;
+                        return `${campoEsp}: ${localized}`;
+                    }).join(' | ');
+                } 
+                // Si es un error controlado tuyo (como el HTTP 409 "Ya existe un usuario...")
+                else if (errorData && errorData.detail) {
+                    if (typeof errorData.detail === 'string') {
+                        errorMessage = errorData.detail;
+                    } else if (Array.isArray(errorData.detail)) {
+                        errorMessage = errorData.detail.map(d => formatDetailItem(d)).join(' | ');
+                    } else {
+                        errorMessage = JSON.stringify(errorData.detail);
+                    }
+                }
             } catch (_) {
                 const fallbackText = await response.text();
                 if (fallbackText) errorMessage = fallbackText;
             }
-            throw new Error(errorMessage);
+            
+            // PINTAMOS EL ERROR EXACTO DE FASTAPI DE MANERA INMEDIATA
+            setAuthMessage(registerMessage, errorMessage, 'error');
+            setFormLoading(registerForm, false, 'Registrarse');
+            return; // Cortamos el flujo limpiamente aquí
         }
         
         await response.json();
         setAuthMessage(registerMessage, 'Cuenta creada. Ahora puedes iniciar sesión.', 'success');
         registerForm.reset();
-        loginForm.classList.remove('hidden');
-        registerForm.classList.add('hidden');
+        
+        setTimeout(() => {
+            loginForm.classList.remove('hidden');
+            registerForm.classList.add('hidden');
+        }, 1500);
+
     } catch (error) {
-        setAuthMessage(registerMessage, error.message || 'No se pudo completar el registro');
-        console.error('Register error:', error);
+        console.error('Register error original:', error);
+        setAuthMessage(registerMessage, 'No se pudo conectar con el servidor backend.', 'error');
     } finally {
         setFormLoading(registerForm, false, 'Registrarse');
         if (submitButton) submitButton.dataset.defaultText = 'Registrarse';
@@ -288,4 +357,67 @@ if (authToken) {
     loadUserData();
 } else {
     showLoginScreen();
+}
+
+// Normaliza/traduce mensajes comunes de validación Pydantic/FastAPI
+function localizeMessage(message, field) {
+    if (!message) return '';
+    const msg = String(message);
+    const lower = msg.toLowerCase();
+
+    // Email errors
+    if (lower.includes('email') && (lower.includes('valid') || lower.includes('@') || lower.includes('correo') || lower.includes('address'))) {
+        if (lower.includes('exactly one @') || lower.includes("must have exactly one @") || lower.includes('one @')) {
+            return 'Correo electrónico no válido: debe contener una única @.';
+        }
+        return 'Correo electrónico no válido.';
+    }
+
+    // Password errors (mayúscula/minúscula/largo)
+    if (field === 'password' || lower.includes('password') || lower.includes('contraseña')) {
+        if (lower.includes('mayúscula') || lower.includes('uppercase') || lower.includes('mayus')) return 'debe contener al menos una letra mayúscula.';
+        // detecta número mínimo en el mensaje (p. ej. 'ensure this value has at least 8 characters')
+        const mmin = lower.match(/(at least|al menos) (\d+)|(?<!\d)(\d+) (characters|caracteres)/);
+        if (mmin) {
+            const n = (mmin[2] || mmin[3]);
+            return `debe tener al menos ${n} caracteres.`;
+        }
+        // Fallback para casos que mencionan "8 characters"
+        if (lower.includes('8') && lower.includes('characters')) return 'debe tener al menos 8 caracteres.';
+        return msg.replace(/value error,?/i, '').trim();
+    }
+
+    // Name/surname
+    if (field === 'nombre' || field === 'apellidos' || lower.includes('nombre') || lower.includes('apellidos') || lower.includes('name')) {
+        if (lower.includes('at least') || lower.includes('al menos') || lower.includes('least')) {
+            const m = lower.match(/(\d+)/);
+            if (m) return `Nombre/Apellido: debe tener al menos ${m[1]} caracteres.`;
+        }
+        return msg;
+    }
+
+    // Default: devolver original, pero limpio
+    return msg;
+}
+
+// Formatea un elemento del array `detail` de FastAPI (objeto o string)
+function formatDetailItem(item) {
+    if (!item) return '';
+    if (typeof item === 'string') return item;
+    if (typeof item === 'object') {
+        const campo = item.loc && item.loc[1] ? item.loc[1] : null;
+        if (campo && item.msg) {
+            const campoEsp = campo === 'password' ? 'Contraseña' : campo === 'nombre' ? 'Nombre' : campo === 'apellidos' ? 'Apellido' : campo === 'email' ? 'Correo' : campo;
+            const localized = localizeMessage(item.msg, campo);
+            // evitar duplicar el prefijo si localizeMessage ya lo contiene
+            const lower = (localized || '').toLowerCase();
+            if (lower.startsWith(campoEsp.toLowerCase()) || lower.startsWith('correo') || lower.startsWith('contraseña') || lower.startsWith('nombre') || lower.startsWith('apellido')) return localized;
+            return `${campoEsp}: ${localized}`;
+        }
+        if (item.msg) return localizeMessage(item.msg, campo || '');
+        if (item.message) return String(item.message);
+        if (item.detail) return Array.isArray(item.detail) ? item.detail.map(d => formatDetailItem(d)).join(' | ') : String(item.detail);
+        return JSON.stringify(item);
+    }
+    return String(item);
 }

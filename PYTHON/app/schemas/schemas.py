@@ -71,12 +71,6 @@ class UsuarioUpdate(BaseModel):
     password: Optional[str] = None 
 
 
-# 🔥 **AQUÍ ESTABA EL PROBLEMA → ESTA CLASE FALTABA**
-class UsuarioAdminUpdate(UsuarioUpdate):
-    rol: Optional[str] = None
-    activo: Optional[bool] = None
-
-
 class UsuarioOut(UsuarioBase):
     usuario_id: int
     rol: str
@@ -422,7 +416,7 @@ class PlanBase(BaseModel):
     fecha_inicio: date
     fecha_fin: Optional[date] = None
     estado: Optional[EstadoPlan] = "borrador"
-    entrenador_id: Optional[int] = None
+    # eliminado entrenador_id: todos los planes pertenecen a su `usuario`
 
     @field_validator("nombre_plan")
     @classmethod
@@ -450,7 +444,7 @@ class PlanUpdate(BaseModel):
     fecha_inicio: Optional[date] = None
     fecha_fin: Optional[date] = None
     estado: Optional[EstadoPlan] = None
-    entrenador_id: Optional[int] = None
+    
 
 
 class PlanOut(PlanBase):
@@ -462,31 +456,7 @@ class PlanOut(PlanBase):
     model_config = {"from_attributes": True}
 
 
-# ════════════════════════════════════════════════════════════
-# NOTA DE ENTRENADOR
-# ════════════════════════════════════════════════════════════
-
-class NotaEntrenadorBase(BaseModel):
-    contenido: str
-    privado: Optional[bool] = False
-
-
-class NotaEntrenadorCreate(NotaEntrenadorBase):
-    pass
-
-
-class NotaEntrenadorUpdate(BaseModel):
-    contenido: Optional[str] = None
-    privado: Optional[bool] = None
-
-
-class NotaEntrenadorOut(NotaEntrenadorBase):
-    nota_id: int
-    plan_id: int
-    entrenador_id: int
-    fecha_creacion: datetime
-
-    model_config = {"from_attributes": True}
+# Notas de entrenador removidas — ya no existen en la API
 
 
 # ════════════════════════════════════════════════════════════
@@ -495,7 +465,7 @@ class NotaEntrenadorOut(NotaEntrenadorBase):
 
 TipoAlerta = Literal[
     "medicacion", "habito", "entrenamiento",
-    "chequeo_salud", "mensaje_entrenador", "sistema"
+    "chequeo_salud", "sistema"
 ]
 Prioridad = Literal["baja", "media", "alta", "urgente"]
 

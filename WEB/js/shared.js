@@ -66,7 +66,6 @@ const PAGE_MAP = {
     metricas:    'metricas.html',
     medicacion:  'medicacion.html',
     ejercicios:  'ejercicios.html',
-    estadisticas:'estadisticas.html',
     historial:   'historial.html',
     perfil:      'perfil.html',
     temporizador: 'temporizador.html',
@@ -80,13 +79,12 @@ const SIDEBAR_LINKS = [
         { key: 'dashboard',    icon: '🏠', label: 'Dashboard'   },
         { key: 'habitos',      icon: '📋', label: 'Mis Hábitos' },
         { key: 'progreso',     icon: '📊', label: 'Progreso'    },
-        { key: 'calendario',   icon: '📅', label: 'Calendario'  },
         { key: 'metricas',     icon: '📏', label: 'Métricas'    },
+        { key: 'calendario',   icon: '📅', label: 'Calendario'  },
         { key: 'medicacion',   icon: '💊', label: 'Medicación'  },
     ]},
     { section: 'ENTRENAMIENTO', links: [
         { key: 'ejercicios',       icon: '💪', label: 'Ejercicios'       },
-        { key: 'estadisticas',     icon: '📈', label: 'Estadísticas'     },
         { key: 'historial',        icon: '📜', label: 'Historial'        },
         { key: 'temporizador',     icon: '⏱', label: 'Temporizador'     },
         { key: 'prediccion',       icon: '📉', label: 'Predicción'       },
@@ -139,6 +137,25 @@ function renderSidebar(activePage) {
     // Cargar datos usuario
     loadSidebarUser();
     loadAlertsBadge();
+
+    // Hacer avatar/nombre clicables: ir a perfil; logo lleva al dashboard
+    setTimeout(() => {
+        const userCard = document.querySelector('.user-card');
+        const avatarEl = document.getElementById('userAvatar');
+        const nameEl = document.getElementById('userName');
+        const logoEl = document.querySelector('.logo');
+
+        [userCard, avatarEl, nameEl].forEach(el => {
+            if (!el) return;
+            el.style.cursor = 'pointer';
+            el.addEventListener('click', () => { window.location.href = 'perfil.html'; });
+        });
+
+        if (logoEl) {
+            logoEl.style.cursor = 'pointer';
+            logoEl.addEventListener('click', () => { window.location.href = 'dashboard.html'; });
+        }
+    }, 50);
 }
 
 async function loadSidebarUser() {

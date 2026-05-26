@@ -187,6 +187,63 @@
         lbl.style.color = score > 0 ? colors[score-1] : 'var(--muted)';
     }
 
+    // Convierte entradas de `detail` de FastAPI a texto legible
+    function formatDetailItem(item) {
+        if (!item) return '';
+        if (typeof item === 'string') return item;
+        if (typeof item === 'object') {
+            const campo = item.loc && item.loc[1] ? item.loc[1] : null;
+            if (campo && item.msg) {
+                const campoEsp = campo === 'password' ? 'Contraseña' : campo === 'nombre' ? 'Nombre' : campo === 'apellidos' ? 'Apellido' : campo === 'email' ? 'Correo' : campo;
+                const localized = localizeMessage(item.msg, campo);
+                const lower = (localized || '').toLowerCase();
+                if (lower.startsWith(campoEsp.toLowerCase()) || lower.startsWith('correo') || lower.startsWith('contraseña') || lower.startsWith('nombre') || lower.startsWith('apellido')) return localized;
+                return `${campoEsp}: ${localized}`;
+            }
+            if (item.msg) return localizeMessage(item.msg, campo || '');
+            if (item.message) return String(item.message);
+            if (item.detail) return Array.isArray(item.detail) ? item.detail.map(d => formatDetailItem(d)).join(' | ') : String(item.detail);
+            return JSON.stringify(item);
+        }
+        return String(item);
+    }
+
+    // Traduce/normaliza mensajes comunes de validación al español
+    function localizeMessage(message, field) {
+        if (!message) return '';
+        const msg = String(message);
+        const lower = msg.toLowerCase();
+
+        // Email
+        if ((field === 'email') || lower.includes('email') || lower.includes('@') || lower.includes('correo')) {
+            if (lower.includes('exactly one @') || lower.includes('must have exactly one @') || lower.includes('one @')) {
+                return 'Correo electrónico no válido: debe contener una única @.';
+            }
+            return 'Correo electrónico no válido.';
+        }
+
+        // Password
+        if (field === 'password' || lower.includes('password') || lower.includes('contraseña')) {
+            if (lower.includes('mayúscula') || lower.includes('uppercase') || lower.includes('mayus')) return 'Contraseña: debe contener al menos una letra mayúscula.';
+            const m = lower.match(/(\d+)/);
+            if (lower.includes('al menos') || lower.includes('at least') || (m && m[0] >= 6)) {
+                if (m) return `Contraseña: debe tener al menos ${m[0]} caracteres.`;
+                if (lower.includes('8') || lower.includes('8 characters')) return 'Contraseña: debe tener al menos 8 caracteres.';
+            }
+            return msg.replace(/value error,?/i, '').trim();
+        }
+
+        // Nombre/Apellidos
+        if (field === 'nombre' || field === 'apellidos' || lower.includes('nombre') || lower.includes('apellidos') || lower.includes('name')) {
+            const m = lower.match(/(\d+)/);
+            if (m) return `Nombre/Apellido: debe tener al menos ${m[0]} caracteres.`;
+            return msg;
+        }
+
+        // Default: devolver el mensaje original
+        return msg;
+    }
+
     function setLoading(btnId, loading, text) {
         const btn = document.getElementById(btnId);
         btn.disabled     = loading;
@@ -231,7 +288,7 @@
         const msg       = document.getElementById('regMsg');
         msg.textContent = '';
         if (!nombre || !apellidos || !email || !password) { msg.textContent = 'Rellena todos los campos'; return; }
-        if (password.length < 6) { msg.textContent = 'Mínimo 6 caracteres'; return; }
+        if (password.length < 8) { msg.textContent = 'Mínimo 8 caracteres'; return; }
 
         setLoading('btnRegister', true, 'Crear cuenta');
         try {
@@ -242,6 +299,11 @@
             });
             if (!res.ok) {
                 const d = await res.json().catch(() => ({}));
+                // Construir mensaje legible si backend devuelve detail (array de errores)
+                if (d && d.detail && Array.isArray(d.detail)) {
+                    const msgArr = d.detail.map(it => formatDetailItem(it));
+                    throw new Error(msgArr.join(' | '));
+                }
                 throw new Error(d.detail || 'Error en el registro');
             }
             msg.style.color = '#4caf7d';

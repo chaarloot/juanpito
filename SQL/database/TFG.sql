@@ -1,9 +1,3 @@
--- ============================================
--- BASE DE DATOS: VITALIA CJ
--- Esquema limpio para MySQL Workbench
--- Sin usuarios precargados: el acceso solo comienza tras registrarse
--- ============================================
-
 DROP DATABASE IF EXISTS VitaliaCJ;
 CREATE DATABASE IF NOT EXISTS VitaliaCJ
   CHARACTER SET utf8mb4
@@ -14,7 +8,6 @@ SET FOREIGN_KEY_CHECKS = 0;
 
 DROP TABLE IF EXISTS tokens_autenticacion;
 DROP TABLE IF EXISTS alertas;
-DROP TABLE IF EXISTS notas_entrenador;
 DROP TABLE IF EXISTS planes;
 DROP TABLE IF EXISTS medicacion_programada;
 DROP TABLE IF EXISTS sesiones_entrenamiento;
@@ -25,9 +18,6 @@ DROP TABLE IF EXISTS usuarios;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
--- ============================================
--- TABLA: usuarios
--- ============================================
 CREATE TABLE usuarios (
     usuario_id INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(255) NOT NULL,
@@ -39,19 +29,15 @@ CREATE TABLE usuarios (
     altura_cm DECIMAL(5,2) NULL,
     peso_kg DECIMAL(5,2) NULL,
     zona_horaria VARCHAR(50) NOT NULL DEFAULT 'UTC',
-    rol ENUM('usuario', 'entrenador', 'admin') NOT NULL DEFAULT 'usuario',
+    rol VARCHAR(20) NOT NULL DEFAULT 'usuario',
     activo BOOLEAN NOT NULL DEFAULT TRUE,
     ultimo_acceso DATETIME NULL,
     fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     fecha_actualizacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE KEY uq_usuarios_email (email),
-    INDEX idx_usuarios_rol (rol),
     INDEX idx_usuarios_activo (activo)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
 
--- ============================================
--- TABLA: metricas_salud
--- ============================================
 CREATE TABLE metricas_salud (
     metrica_id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT NOT NULL,
@@ -73,9 +59,6 @@ CREATE TABLE metricas_salud (
     INDEX idx_metricas_usuario_fecha (usuario_id, fecha_metrica)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
 
--- ============================================
--- TABLA: habitos
--- ============================================
 CREATE TABLE habitos (
     habito_id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT NOT NULL,
@@ -94,9 +77,6 @@ CREATE TABLE habitos (
     INDEX idx_habitos_usuario (usuario_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
 
--- ============================================
--- TABLA: registros_habitos
--- ============================================
 CREATE TABLE registros_habitos (
     registro_id INT AUTO_INCREMENT PRIMARY KEY,
     habito_id INT NOT NULL,
@@ -112,9 +92,6 @@ CREATE TABLE registros_habitos (
     INDEX idx_registros_fecha (fecha_registro)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
 
--- ============================================
--- TABLA: sesiones_entrenamiento
--- ============================================
 CREATE TABLE sesiones_entrenamiento (
     sesion_id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT NOT NULL,
@@ -133,9 +110,6 @@ CREATE TABLE sesiones_entrenamiento (
     INDEX idx_sesiones_usuario_inicio (usuario_id, inicio)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
 
--- ============================================
--- TABLA: medicacion_programada
--- ============================================
 CREATE TABLE medicacion_programada (
     medicacion_id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT NOT NULL,
@@ -156,13 +130,9 @@ CREATE TABLE medicacion_programada (
     INDEX idx_medicacion_activo (activo)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
 
--- ============================================
--- TABLA: planes
--- ============================================
 CREATE TABLE planes (
     plan_id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT NOT NULL,
-    entrenador_id INT NULL,
     nombre_plan VARCHAR(200) NOT NULL,
     tipo_plan ENUM('fitness', 'nutricion', 'bienestar', 'rehabilitacion', 'personalizado') NOT NULL,
     descripcion TEXT NULL,
@@ -175,41 +145,17 @@ CREATE TABLE planes (
     CONSTRAINT fk_planes_usuario
         FOREIGN KEY (usuario_id) REFERENCES usuarios(usuario_id)
         ON DELETE CASCADE,
-    CONSTRAINT fk_planes_entrenador
-        FOREIGN KEY (entrenador_id) REFERENCES usuarios(usuario_id)
-        ON DELETE SET NULL,
+    CONSTRAINT fk_planes_usuario
+        FOREIGN KEY (usuario_id) REFERENCES usuarios(usuario_id)
+        ON DELETE CASCADE,
     INDEX idx_planes_usuario (usuario_id),
-    INDEX idx_planes_entrenador (entrenador_id),
     INDEX idx_planes_estado (estado)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
 
--- ============================================
--- TABLA: notas_entrenador
--- ============================================
-CREATE TABLE notas_entrenador (
-    nota_id INT AUTO_INCREMENT PRIMARY KEY,
-    plan_id INT NOT NULL,
-    entrenador_id INT NOT NULL,
-    contenido TEXT NOT NULL,
-    privado BOOLEAN NOT NULL DEFAULT FALSE,
-    fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_notas_plan
-        FOREIGN KEY (plan_id) REFERENCES planes(plan_id)
-        ON DELETE CASCADE,
-    CONSTRAINT fk_notas_entrenador
-        FOREIGN KEY (entrenador_id) REFERENCES usuarios(usuario_id)
-        ON DELETE CASCADE,
-    INDEX idx_notas_plan (plan_id),
-    INDEX idx_notas_entrenador (entrenador_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
-
--- ============================================
--- TABLA: alertas
--- ============================================
 CREATE TABLE alertas (
     alerta_id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT NOT NULL,
-    tipo_alerta ENUM('medicacion', 'habito', 'entrenamiento', 'chequeo_salud', 'mensaje_entrenador', 'sistema') NOT NULL,
+    tipo_alerta ENUM('medicacion', 'habito', 'entrenamiento', 'chequeo_salud', 'sistema') NOT NULL,
     titulo VARCHAR(200) NOT NULL,
     mensaje TEXT NULL,
     prioridad ENUM('baja', 'media', 'alta', 'urgente') NOT NULL DEFAULT 'media',
@@ -224,9 +170,6 @@ CREATE TABLE alertas (
     INDEX idx_alertas_programada (programada_para)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
 
--- ============================================
--- TABLA: tokens_autenticacion
--- ============================================
 CREATE TABLE tokens_autenticacion (
     token_id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT NOT NULL,
@@ -245,10 +188,3 @@ CREATE TABLE tokens_autenticacion (
     INDEX idx_tokens_tipo (tipo_token),
     INDEX idx_tokens_expira (expira)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
-
--- ============================================
--- NOTA IMPORTANTE
--- ============================================
--- Este script no inserta usuarios, ni tokens, ni credenciales de prueba.
--- El registro se realiza desde la API (/auth/register) y el login solo funciona
--- con usuarios creados previamente y activos.

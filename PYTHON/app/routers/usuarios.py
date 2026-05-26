@@ -3,9 +3,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from app.core.security import get_current_user, require_roles
+from app.core.security import get_current_user
 from app.models.models import Usuario
-from app.schemas.schemas import UsuarioOut, UsuarioUpdate, UsuarioAdminUpdate
+from app.schemas.schemas import UsuarioOut, UsuarioUpdate
 
 router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
 
@@ -20,16 +20,7 @@ def get_me(current_user: Usuario = Depends(get_current_user)):
 
 
 # ───────────────────────────────────────────────────────────────
-# LISTAR TODOS LOS USUARIOS (SOLO ADMIN)
-# ───────────────────────────────────────────────────────────────
-@router.get("/", response_model=list[UsuarioOut], dependencies=[Depends(require_roles("admin"))])
-def get_all_users(db: Session = Depends(get_db)):
-    """Devuelve todos los usuarios (solo admin)."""
-    return db.query(Usuario).all()
-
-
-# ───────────────────────────────────────────────────────────────
-# OBTENER USUARIO POR ID (ADMIN O EL MISMO USUARIO)
+# OBTENER USUARIO POR ID (SOLO EL MISMO USUARIO)
 # ───────────────────────────────────────────────────────────────
 @router.get("/{usuario_id}", response_model=UsuarioOut)
 def get_user_by_id(
@@ -41,8 +32,7 @@ def get_user_by_id(
     if not usuario:
         raise HTTPException(404, "Usuario no encontrado")
 
-    # Solo admin o el propio usuario
-    if current_user.rol != "admin" and current_user.usuario_id != usuario_id:
+    if current_user.usuario_id != usuario_id:
         raise HTTPException(403, "No tienes permiso para ver este usuario")
 
     return usuario
@@ -73,27 +63,30 @@ def update_me(
 
 
 # ───────────────────────────────────────────────────────────────
-# ACTUALIZAR USUARIO (SOLO ADMIN)
+# ELIMINAR CUENTA PROPIA
 # ───────────────────────────────────────────────────────────────
-@router.put("/{usuario_id}", response_model=UsuarioOut, dependencies=[Depends(require_roles("admin"))])
-def admin_update_user(usuario_id: int, data: UsuarioAdminUpdate, db: Session = Depends(get_db)):
-    usuario = db.get(Usuario, usuario_id)
+@router.delete("/me", status_code=204)
+def delete_me(
+    db: Session = Depends(get_db),
+    current_user: Usuario = Depends(get_current_user),
+):
+    usuario = db.get(Usuario, current_user.usuario_id)
     if not usuario:
         raise HTTPException(404, "Usuario no encontrado")
 
-    for field, value in data.dict(exclude_unset=True).items():
-        setattr(usuario, field, value)
-
+    db.delete(usuario)
     db.commit()
-    db.refresh(usuario)
-    return usuario
+    return
 
 
 # ───────────────────────────────────────────────────────────────
-# ELIMINAR USUARIO (SOLO ADMIN)
+# ELIMINAR USUARIO (EL PROPIO USUARIO)
 # ───────────────────────────────────────────────────────────────
-@router.delete("/{usuario_id}", status_code=204, dependencies=[Depends(require_roles("admin"))])
-def delete_user(usuario_id: int, db: Session = Depends(get_db)):
+@router.delete("/{usuario_id}", status_code=204)
+def delete_user(usuario_id: int, db: Session = Depends(get_db), current_user: Usuario = Depends(get_current_user)):
+    if current_user.usuario_id != usuario_id:
+        raise HTTPException(403, "No tienes permiso para eliminar este usuario")
+
     usuario = db.get(Usuario, usuario_id)
     if not usuario:
         raise HTTPException(404, "Usuario no encontrado")

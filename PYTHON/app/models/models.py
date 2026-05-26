@@ -16,7 +16,7 @@ from app.core.database import Base
 
 # ─── Enums reutilizables ──────────────────────────────────────────────────────
 genero_enum = Enum("hombre", "mujer", "otro", "prefiero_no_decirlo", name="genero_enum")
-rol_enum = Enum("usuario", "entrenador", "admin", name="rol_enum")
+# rol en BD ahora se gestiona como texto (VARCHAR)
 frecuencia_habito_enum = Enum("diario", "semanal", "mensual", "personalizado", name="frecuencia_habito_enum")
 frecuencia_med_enum = Enum(
     "una_vez_dia", "dos_veces_dia", "tres_veces_dia",
@@ -27,7 +27,7 @@ tipo_plan_enum = Enum("fitness", "nutricion", "bienestar", "rehabilitacion", "pe
 estado_plan_enum = Enum("borrador", "activo", "pausado", "completado", "cancelado", name="estado_plan_enum")
 tipo_alerta_enum = Enum(
     "medicacion", "habito", "entrenamiento",
-    "chequeo_salud", "mensaje_entrenador", "sistema",
+    "chequeo_salud", "sistema",
     name="tipo_alerta_enum",
 )
 prioridad_enum = Enum("baja", "media", "alta", "urgente", name="prioridad_enum")
@@ -53,7 +53,7 @@ class Usuario(Base):
     altura_cm: Mapped[Optional[float]] = mapped_column(DECIMAL(5, 2))
     peso_kg: Mapped[Optional[float]] = mapped_column(DECIMAL(5, 2))
     zona_horaria: Mapped[str] = mapped_column(String(50), default="UTC")
-    rol: Mapped[str] = mapped_column(rol_enum, default="usuario")
+    rol: Mapped[str] = mapped_column(String(20), default="usuario")
     activo: Mapped[bool] = mapped_column(Boolean, default=True)
     fecha_creacion: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     fecha_actualizacion: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -64,8 +64,6 @@ class Usuario(Base):
     sesiones: Mapped[List["SesionEntrenamiento"]] = relationship("SesionEntrenamiento", back_populates="usuario", cascade="all, delete-orphan")
     medicaciones: Mapped[List["MedicacionProgramada"]] = relationship("MedicacionProgramada", back_populates="usuario", cascade="all, delete-orphan")
     planes: Mapped[List["Plan"]] = relationship("Plan", back_populates="usuario", foreign_keys="Plan.usuario_id", cascade="all, delete-orphan")
-    planes_como_entrenador: Mapped[List["Plan"]] = relationship("Plan", back_populates="entrenador", foreign_keys="Plan.entrenador_id")
-    notas_entrenador: Mapped[List["NotaEntrenador"]] = relationship("NotaEntrenador", back_populates="entrenador", cascade="all, delete-orphan")
     alertas: Mapped[List["Alerta"]] = relationship("Alerta", back_populates="usuario", cascade="all, delete-orphan")
     tokens: Mapped[List["TokenAutenticacion"]] = relationship("TokenAutenticacion", back_populates="usuario", cascade="all, delete-orphan")
 
@@ -181,7 +179,7 @@ class Plan(Base):
 
     plan_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     usuario_id: Mapped[int] = mapped_column(Integer, ForeignKey("usuarios.usuario_id", ondelete="CASCADE"), nullable=False)
-    entrenador_id: Mapped[Optional[int]] = mapped_column(Integer, ForeignKey("usuarios.usuario_id", ondelete="SET NULL"))
+    # eliminada la columna entrenador_id — ahora solo existe el usuario propietario
     nombre_plan: Mapped[str] = mapped_column(String(200), nullable=False)
     tipo_plan: Mapped[str] = mapped_column(tipo_plan_enum, nullable=False)
     descripcion: Mapped[Optional[str]] = mapped_column(Text)
@@ -193,23 +191,11 @@ class Plan(Base):
     fecha_actualizacion: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     usuario: Mapped["Usuario"] = relationship("Usuario", back_populates="planes", foreign_keys=[usuario_id])
-    entrenador: Mapped[Optional["Usuario"]] = relationship("Usuario", back_populates="planes_como_entrenador", foreign_keys=[entrenador_id])
-    notas: Mapped[List["NotaEntrenador"]] = relationship("NotaEntrenador", back_populates="plan", cascade="all, delete-orphan")
+    # sin relación a entrenador ni notas de entrenador
 
 
 # ─── Nota de entrenador ───────────────────────────────────────────────────────
-class NotaEntrenador(Base):
-    __tablename__ = "notas_entrenador"
-
-    nota_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    plan_id: Mapped[int] = mapped_column(Integer, ForeignKey("planes.plan_id", ondelete="CASCADE"), nullable=False)
-    entrenador_id: Mapped[int] = mapped_column(Integer, ForeignKey("usuarios.usuario_id", ondelete="CASCADE"), nullable=False)
-    contenido: Mapped[str] = mapped_column(Text, nullable=False)
-    privado: Mapped[bool] = mapped_column(Boolean, default=False)
-    fecha_creacion: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-
-    plan: Mapped["Plan"] = relationship("Plan", back_populates="notas")
-    entrenador: Mapped["Usuario"] = relationship("Usuario", back_populates="notas_entrenador")
+# NotaEntrenador eliminada: la funcionalidad de notas de entrenador se quita del modelo
 
 
 # ─── Alerta ───────────────────────────────────────────────────────────────────

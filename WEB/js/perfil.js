@@ -31,7 +31,8 @@ async function loadPerfil() {
 
         setEl('profileName',  `${u.nombre} ${u.apellidos}`);
         setEl('profileEmail', u.email);
-        setEl('profileRol',   capitalize(u.rol));
+        // El rol ya no es relevante en la UI — mostrar "Usuario" fijo
+        setEl('profileRol',   'Usuario');
         setEl('profileSince', new Date(u.fecha_creacion).toLocaleDateString('es-ES', { month:'long', year:'numeric' }));
 
     } catch (_) { showToast('Error al cargar el perfil', 'error'); }
@@ -94,8 +95,8 @@ async function changePassword(e) {
     if (newPw !== confirm) {
         showToast('Las contraseñas no coinciden', 'error'); return;
     }
-    if (newPw.length < 6) {
-        showToast('Mínimo 6 caracteres', 'error'); return;
+    if (newPw.length < 8) {
+        showToast('Mínimo 8 caracteres', 'error'); return;
     }
 
     // Verificar contraseña actual haciendo login
@@ -156,8 +157,23 @@ function confirmDeleteAccount() {
 function deleteAccount() {
     const val = document.getElementById('deleteConfirmInput')?.value;
     if (val !== 'ELIMINAR') { showToast('Escribe ELIMINAR para confirmar', 'error'); return; }
-    showToast('Función no disponible en esta versión', 'error');
-    removeModal('deleteModal');
+    (async () => {
+        try {
+            const res = await authFetch(`${API_URL}/usuarios/me`, { method: 'DELETE' });
+            if (!res.ok && res.status !== 204) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.detail || 'No se pudo eliminar la cuenta');
+            }
+
+            clearAuthSession();
+            removeModal('deleteModal');
+            showToast('Cuenta eliminada correctamente');
+            window.location.href = 'login.html';
+        } catch (error) {
+            removeModal('deleteModal');
+            showToast(error.message || 'No se pudo eliminar la cuenta', 'error');
+        }
+    })();
 }
 
 function setInput(id, val) {

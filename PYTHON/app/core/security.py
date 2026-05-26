@@ -76,19 +76,7 @@ def get_current_user(
     if not usuario or not usuario.activo:
         raise HTTPException(status_code=401, detail="Usuario no encontrado o inactivo")
 
+    # Esta versión del sistema trabaja con un único tipo de usuario.
+    usuario.rol = "usuario"
+
     return usuario
-
-
-# ───────────────────────────────────────────────────────────────
-# ROLES
-# ───────────────────────────────────────────────────────────────
-def require_roles(*roles: str):
-    def dependency(current_user=Depends(get_current_user)):
-        if current_user.rol not in roles:
-            raise HTTPException(
-                status_code=403,
-                detail=f"Se requiere uno de los roles: {', '.join(roles)}",
-            )
-        return current_user
-
-    return dependency
