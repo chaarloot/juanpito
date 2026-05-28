@@ -164,7 +164,10 @@
     } catch (e) {}
 </script>
 <script>
-    const API_URL = window.API_URL || ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://127.0.0.1:8000' : (window.location.origin + '/api'));
+    const isVercelHost = window.location.hostname.endsWith('.vercel.app') || window.location.hostname.endsWith('.vercel.dev');
+    const API_URL = isVercelHost
+        ? (window.location.origin + '/api')
+        : (window.API_URL || ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://127.0.0.1:8000' : window.location.origin));
 
     // Redirigir si ya hay sesión
     // if (localStorage.getItem('token')) {
