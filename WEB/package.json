@@ -1,8 +1,0 @@
-{
-  "name": "vitalia-frontend",
-  "version": "1.0.0",
-  "private": true,
-  "scripts": {
-    "build": "node -e \"const fs=require('fs'); const content='(() => {\\n  window.API_URL = \\\'http://127.0.0.1:8000\\\';\\n})();\\n'; fs.writeFileSync('config.js', content); fs.writeFileSync('../config.js', content);\""
-  }
-}

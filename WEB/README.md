@@ -46,10 +46,10 @@ Verifica que esté disponible en: http://127.0.0.1:8000/docs
 
 Abre en el navegador:
 ```
-file:///c:/Users/Juan%20Cendrero/Desktop/tfgchar/juanpito/WEB/index.html
+index.html
 ```
 
-O simplemente haz doble clic en `WEB/index.html`
+O abre `index.html` desde la raíz del proyecto
 
 ### 3. Registra un Usuario
 

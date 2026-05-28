@@ -171,7 +171,7 @@ Code
 
 ### Ejecución
 1. Abrir la carpeta `WEB/`  
-2. Abrir `WEB/index.html` en el navegador  
+2. Abrir `index.html` en el navegador  
 
 ---
 
