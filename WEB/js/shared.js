@@ -58,7 +58,7 @@ async function authFetch(url, options = {}) {
 
 // Exponer globalmente
 window.authFetch = authFetch;
-if (!window.API_URL) window.API_URL = API_URL;
+if (isVercelHost || !window.API_URL) window.API_URL = API_URL;
 
 // ── Page name → path mapping ─────────────────────────────────
 const PAGE_MAP = {
