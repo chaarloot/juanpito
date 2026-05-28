@@ -311,6 +311,7 @@
         const msg       = document.getElementById('regMsg');
         msg.textContent = '';
         if (!nombre || !apellidos || !email || !password) { msg.textContent = 'Rellena todos los campos'; return; }
+        if (nombre.length < 2 || apellidos.length < 2) { msg.textContent = 'Nombre y apellido deben tener al menos 2 caracteres'; return; }
         if (password.length < 8) { msg.textContent = 'Mínimo 8 caracteres'; return; }
 
         setLoading('btnRegister', true, 'Crear cuenta');
