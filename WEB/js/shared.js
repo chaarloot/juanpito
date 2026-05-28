@@ -3,10 +3,7 @@
 // Funciones comunes a todas las páginas
 // ============================================================
 
-const isVercelHost = window.location.hostname.endsWith('.vercel.app') || window.location.hostname.endsWith('.vercel.dev');
-const API_URL = isVercelHost
-    ? (window.location.origin + '/api')
-    : ((window && window.API_URL) ? window.API_URL : ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://127.0.0.1:8000' : window.location.origin));
+const API_URL = (window && window.API_URL) ? window.API_URL : 'http://127.0.0.1:8000';
 
 // ── Auth helpers ─────────────────────────────────────────────
 function getToken()        { return localStorage.getItem('token'); }
@@ -58,7 +55,7 @@ async function authFetch(url, options = {}) {
 
 // Exponer globalmente
 window.authFetch = authFetch;
-if (isVercelHost || !window.API_URL) window.API_URL = API_URL;
+if (!window.API_URL) window.API_URL = API_URL;
 
 // ── Page name → path mapping ─────────────────────────────────
 const PAGE_MAP = {

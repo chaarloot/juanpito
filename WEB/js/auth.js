@@ -1,8 +1,5 @@
 // CONFIGURACIÓN
-const isVercelHost = window.location.hostname.endsWith('.vercel.app') || window.location.hostname.endsWith('.vercel.dev');
-const API_URL = isVercelHost
-    ? (window.location.origin + '/api')
-    : (window.API_URL || ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://127.0.0.1:8000' : window.location.origin));
+const API_URL = window.API_URL || 'http://127.0.0.1:8000';
 window.API_URL = API_URL;
 let authToken = localStorage.getItem('token');
 let refreshToken = localStorage.getItem('refreshToken');

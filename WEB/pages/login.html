@@ -4,17 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VitaliaJC — Acceder</title>
-    <script>
-        // For deployed site on Vercel, force API to use the serverless /api path
-        try {
-            const host = (window && window.location && window.location.hostname) || '';
-            if (host.endsWith('.vercel.app') || host.endsWith('.vercel.dev')) {
-                window.API_URL = window.location.origin + '/api';
-            }
-        } catch (e) {
-            // ignore
-        }
-    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/login.css">
@@ -156,18 +145,7 @@
 
 <script src="/config.js"></script>
 <script>
-    try {
-        const host = (window && window.location && window.location.hostname) || '';
-        if (host.endsWith('.vercel.app') || host.endsWith('.vercel.dev')) {
-            window.API_URL = window.location.origin + '/api';
-        }
-    } catch (e) {}
-</script>
-<script>
-    const isVercelHost = window.location.hostname.endsWith('.vercel.app') || window.location.hostname.endsWith('.vercel.dev');
-    const API_URL = isVercelHost
-        ? (window.location.origin + '/api')
-        : (window.API_URL || ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://127.0.0.1:8000' : window.location.origin));
+    const API_URL = window.API_URL || 'http://127.0.0.1:8000';
 
     // Redirigir si ya hay sesión
     // if (localStorage.getItem('token')) {
