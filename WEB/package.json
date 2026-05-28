@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "node -e \"const fs=require('fs'); const api=process.env.API_URL||'https://vitalia-juanpito-backend.onrender.com'; const content='window.API_URL = ' + JSON.stringify(api) + ';\\n'; fs.writeFileSync('config.js', content); fs.writeFileSync('../config.js', content);\""
+    "build": "node -e \"const fs=require('fs'); const content='(() => {\\n  const isVercelHost = window.location.hostname.endsWith(\\'.vercel.app\\') || window.location.hostname.endsWith(\\'.vercel.dev\\');\\n  const isLocalHost = window.location.hostname === \\\'localhost\\\' || window.location.hostname === \\\'127.0.0.1\\\';\\n  const fallback = (isLocalHost || isVercelHost) ? \\\'http://127.0.0.1:8000\\\' : window.location.origin;\\n\\n  window.API_URL = fallback;\\n})();\\n'; fs.writeFileSync('config.js', content); fs.writeFileSync('../config.js', content);\""
   }
 }

@@ -3,7 +3,9 @@
 // Funciones comunes a todas las páginas
 // ============================================================
 
-const API_URL = (window && window.API_URL) ? window.API_URL : 'http://127.0.0.1:8000';
+const API_URL = (window && window.API_URL)
+    ? window.API_URL
+    : ((window.location.hostname.endsWith('.vercel.app') || window.location.hostname.endsWith('.vercel.dev') || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://127.0.0.1:8000' : window.location.origin);
 
 // ── Auth helpers ─────────────────────────────────────────────
 function getToken()        { return localStorage.getItem('token'); }

@@ -152,6 +152,11 @@ En `css/estilos.css`:
 - Verifica que esté en `http://127.0.0.1:8000`
 - Comprueba la consola del navegador (F12)
 
+### Despliegue en Vercel
+- Define `API_URL` en las variables de entorno del proyecto Vercel con la URL real del backend
+- El build genera `config.js` a partir de esa variable; si no existe, usa `http://127.0.0.1:8000`
+- Go Live funciona con el backend local, pero Vercel necesita una API pública accesible
+
 ### Error: "CORS"
 - El backend debe tener CORS habilitado
 - En `PYTHON/app/main.py`, CORS está configurado para aceptar `null` y orígenes locales de desarrollo
