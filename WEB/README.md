@@ -166,7 +166,6 @@ En `css/estilos.css`:
 - Los tokens se guardan en localStorage
 - El frontend muestra mensajes de estado en login y registro
 - El frontend intenta refrescar el token automáticamente si expira
-- El frontend es 100% stand-alone, sin dependencias de build
 - Compatible con todos los navegadores modernos
 
 ## 👨‍💻 Autor

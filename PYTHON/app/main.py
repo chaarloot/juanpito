@@ -9,10 +9,7 @@ from app.routers import alertas, auth, habitos, medicacion, metricas, planes, se
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Note: tests manage DB creation themselves. Avoid creating tables here
-    # to prevent cross-engine contamination during test runs.
     yield
-    # Shutdown (si se necesita limpieza)
 
 
 app = FastAPI(
