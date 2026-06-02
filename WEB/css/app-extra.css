@@ -1,3 +1,7 @@
+/* Retoques y extras para: dashboard.html, calendario.html, ejercicios.html, 
+habitos.html, historial.html, medicacion.html, metricas.html, perfil.html, prediccion.html, 
+progreso.html, rutina-aleatoria.html y temporizador.html. */
+
 .alerts-badge {
     display: inline-flex; align-items: center; justify-content: center;
     min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px;
@@ -237,7 +241,7 @@ select:focus,
 .danger-zone { border-color:rgba(255,68,68,.25); }
 .danger-zone h2 { color:#ff4444; }
 
-/*RESPONSIVE*/
+
 @media (max-width: 1024px) { .perfil-layout { grid-template-columns:1fr; } }
 @media (max-width: 768px) {
     .quick-access-grid { grid-template-columns:repeat(3,1fr); }

@@ -22,9 +22,6 @@ def _get_habito_or_404(habito_id: int, usuario_id: int, db: Session) -> Habito:
     return h
 
 
-# Hábitos
-
-
 @router.get("/", response_model=List[HabitoOut])
 def list_habitos(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: Usuario = Depends(get_current_user)):
     return db.query(Habito).filter(Habito.usuario_id == current_user.usuario_id).offset(skip).limit(limit).all()
@@ -59,9 +56,6 @@ def delete_habito(habito_id: int, db: Session = Depends(get_db), current_user: U
     habito = _get_habito_or_404(habito_id, current_user.usuario_id, db)
     db.delete(habito)
     db.commit()
-
-
-# Registros de hábito
 
 
 @router.get("/{habito_id}/registros", response_model=List[RegistroHabitoOut])
@@ -139,8 +133,6 @@ def obtener_estadisticas_habito(
     registros_ordenados = sorted(registros, key=lambda r: to_date(r.fecha_registro))
 
     hoy = datetime.utcnow().date()
-
-    # Racha actual
     racha_actual = 0
     for i in range(len(registros_ordenados) - 1, -1, -1):
         dias_diff = (hoy - to_date(registros_ordenados[i].fecha_registro)).days
@@ -148,8 +140,6 @@ def obtener_estadisticas_habito(
             racha_actual += 1
         else:
             break
-
-    # Racha máxima
     racha_maxima = 0
     racha_temp = 1
     for i in range(1, len(registros_ordenados)):
@@ -193,7 +183,7 @@ def obtener_resumen_todos_habitos(
 
     habitos = db.query(Habito).filter(
         Habito.usuario_id == current_user.usuario_id,
-        Habito.activo == True,  # noqa: E712
+        Habito.activo == True,
     ).all()
 
     resumen = []

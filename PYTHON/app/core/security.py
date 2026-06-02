@@ -13,18 +13,12 @@ from app.core.database import get_db
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login", auto_error=False)
-
-
-# HASH
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
 
 def verify_password(plain: str, hashed: str) -> bool:
     return pwd_context.verify(plain, hashed)
-
-
-# JWT
 def create_access_token(subject: str) -> str:
     expire = datetime.now(timezone.utc) + timedelta(
         minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
@@ -49,9 +43,6 @@ def decode_token(token: str) -> dict:
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token inválido o expirado",
         )
-
-
-# USUARIO ACTUAL
 def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db),

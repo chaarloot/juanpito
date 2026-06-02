@@ -1,7 +1,3 @@
-// ============================================================
-// ejercicios.js — Vitalia JC
-// ============================================================
-
 const EJERCICIOS = [
     { id:1,  name:'Press de Banca',         grupo:'Pecho',    series:'4×8',   peso:'80 kg',    dif:'Intermedio', desc:'Ejercicio principal para pecho. Tumbado en banco, baja la barra hasta el pecho y empuja.' },
     { id:2,  name:'Sentadilla',             grupo:'Piernas',  series:'4×10',  peso:'100 kg',   dif:'Avanzado',   desc:'Rey de los ejercicios. Mantén la espalda recta y rodillas alineadas con los pies.' },

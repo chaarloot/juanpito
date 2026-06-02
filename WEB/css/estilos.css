@@ -1,4 +1,7 @@
-/* VARIABLES Y RESET */
+/* Estilos base (colores, apariencia...). Lo usan: dashboard.html, calendario.html, ejercicios.html, 
+habitos.html, historial.html, medicacion.html, metricas.html, perfil.html, prediccion.html, progreso.html, 
+rutina-aleatoria.html y temporizador.html */
+
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap');
 
 :root {
@@ -91,7 +94,7 @@ select {
     cursor: text;
 }
 
-/* login*/
+
 .modal-overlay {
     display: flex;
     align-items: center;
@@ -250,7 +253,7 @@ select {
     min-height: 48px;
 }
 
-/*main app*/
+
 .app {
     display: flex;
     height: 100vh;
@@ -403,7 +406,7 @@ select {
     background: rgba(255, 68, 68, 0.2);
 }
 
-/*main content*/
+
 .main-content {
     flex: 1;
     display: flex;
@@ -563,7 +566,7 @@ select {
     background: rgba(200, 255, 0, 0.05);
 }
 
-/*rutinas*/
+
 .routines-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -620,7 +623,7 @@ select {
     color: #000;
 }
 
-/*progreso*/
+
 .progress-container {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -639,7 +642,7 @@ select {
     height: 300px !important;
 }
 
-/*calendario*/
+
 .calendar-container {
     padding: 20px;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
@@ -686,7 +689,7 @@ select {
     margin-top: 5px;
 }
 
-/*ejercicios*/
+
 .exercises-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -738,7 +741,7 @@ select {
     color: #000;
 }
 
-/*estadisticas*/
+
 .stats-container {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -768,7 +771,7 @@ select {
     color: var(--color-primary);
 }
 
-/*historial*/
+
 .history-list {
     display: flex;
     flex-direction: column;
@@ -1031,7 +1034,7 @@ select {
     font-weight: 600;
 }
 
-/*ejercicios tabla*/
+
 .exercises-container {
     padding: 20px;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
@@ -1155,7 +1158,7 @@ tbody td {
     font-weight: bold;
 }
 
-/*scroll*/
+
 ::-webkit-scrollbar {
     width: 8px;
 }
@@ -1173,7 +1176,7 @@ tbody td {
     background: rgba(200, 255, 0, 0.5);
 }
 
-/*RESPONSIVE*/
+
 @media (max-width: 1400px) {
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);

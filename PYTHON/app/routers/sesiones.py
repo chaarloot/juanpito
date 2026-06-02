@@ -98,8 +98,6 @@ async def actualizar_sesion(
     
     if not sesion:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sesión no encontrada")
-    
-    # Actualizar campos si se proporcionan
     if sesion_data.tipo_entrenamiento:
         sesion.tipo_entrenamiento = sesion_data.tipo_entrenamiento
     if sesion_data.duracion_minutos:

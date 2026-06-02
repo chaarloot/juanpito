@@ -5,9 +5,6 @@ from datetime import date, datetime, time
 from typing import Optional, List, Literal
 from pydantic import BaseModel, EmailStr, field_validator, model_validator
 import re
-
-
-# USUARIO
 class UsuarioBase(BaseModel):
     email: EmailStr
     nombre: str
@@ -72,19 +69,10 @@ class UsuarioOut(UsuarioBase):
     fecha_actualizacion: datetime
 
     model_config = {"from_attributes": True}
-
-
-# AUTH
 class Token(BaseModel):
     access_token: str
     refresh_token: Optional[str] = None
     token_type: str = "bearer"
-
-
-# TokenData and LoginRequest removed — not referenced elsewhere in the codebase
-
-
-# MÉTRICA DE SALUD
 class MetricaSaludBase(BaseModel):
     fecha_metrica: date
     peso_kg: Optional[float] = None
@@ -163,9 +151,6 @@ class MetricaSaludOut(MetricaSaludBase):
     fecha_creacion: datetime
 
     model_config = {"from_attributes": True}
-
-
-# HÁBITO
 class HabitoBase(BaseModel):
     nombre: str
     descripcion: Optional[str] = None
@@ -209,9 +194,6 @@ class HabitoOut(HabitoBase):
     fecha_actualizacion: datetime
 
     model_config = {"from_attributes": True}
-
-
-# REGISTRO DE HÁBITO
 class RegistroHabitoBase(BaseModel):
     fecha_registro: date
     cantidad_completada: Optional[int] = 0
@@ -233,9 +215,6 @@ class RegistroHabitoOut(RegistroHabitoBase):
     fecha_creacion: datetime
 
     model_config = {"from_attributes": True}
-
-
-# SESIÓN DE ENTRENAMIENTO
 class SesionEntrenamientoBase(BaseModel):
     tipo_entrenamiento: str
     inicio: datetime
@@ -255,7 +234,7 @@ class SesionEntrenamientoBase(BaseModel):
     def duracion_valida(v: Optional[int]) -> Optional[int]:
         if v is not None and v <= 0:
             raise ValueError("Duración debe ser mayor a 0 minutos")
-        if v is not None and v > 1440:  # 24 horas
+        if v is not None and v > 1440:
             raise ValueError("Duración no puede exceder 1440 minutos (24 horas)")
         return v
 
@@ -298,9 +277,6 @@ class SesionEntrenamientoOut(SesionEntrenamientoBase):
     fecha_creacion: datetime
 
     model_config = {"from_attributes": True}
-
-
-# MEDICACIÓN PROGRAMADA
 FrecuenciaMed = Literal[
     "una_vez_dia", "dos_veces_dia", "tres_veces_dia",
     "semanal", "segun_necesidad", "personalizado"
@@ -352,9 +328,6 @@ class MedicacionOut(MedicacionBase):
     fecha_actualizacion: datetime
 
     model_config = {"from_attributes": True}
-
-
-# PLAN
 TipoPlan = Literal["fitness", "nutricion", "bienestar", "rehabilitacion", "personalizado"]
 EstadoPlan = Literal["borrador", "activo", "pausado", "completado", "cancelado"]
 
@@ -403,9 +376,6 @@ class PlanOut(PlanBase):
     fecha_actualizacion: datetime
 
     model_config = {"from_attributes": True}
-
-
-# ALERTA
 TipoAlerta = Literal[
     "medicacion", "habito", "entrenamiento",
     "chequeo_salud", "sistema"
@@ -446,20 +416,13 @@ class AlertaOut(AlertaBase):
     fecha_creacion: datetime
 
     model_config = {"from_attributes": True}
-
-
-# TOKEN DE AUTENTICACIÓN
-# TokenAutenticacionOut schema removed — not referenced elsewhere in the codebase
-
-
-# SESIONES DE ENTRENAMIENTO
 class SesionCrear(BaseModel):
     tipo_entrenamiento: str
     inicio: Optional[datetime] = None
     duracion_minutos: Optional[int] = None
     calorias_quemadas: Optional[int] = None
     ritmo_promedio: Optional[int] = None
-    nivel_intensidad: Optional[int] = None  # 1-10
+    nivel_intensidad: Optional[int] = None
     notas: Optional[str] = None
 
 

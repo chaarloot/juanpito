@@ -1,17 +1,8 @@
-// ============================================================
-// VITALIA JC — app.js  (versión completa y conectada)
-// ============================================================
-
-// API_URL y authToken vienen de auth.js
-
-// Chart instances
 let weeklyChartInstance = null;
 let weightChartInstance = null;
 let caloriesChartInstance = null;
 
-// ============================================================
 // NAVEGACIÓN
-// ============================================================
 function initializeNavigation() {
     const navLinks = document.querySelectorAll('.nav-link');
     const pages    = document.querySelectorAll('.page');
@@ -43,9 +34,7 @@ function initializeNavigation() {
     });
 }
 
-// ============================================================
 // ALERTAS — badge en sidebar
-// ============================================================
 async function loadAlertsBadge() {
     try {
         const res = await window.authFetch(`${API_URL}/alertas/?solo_no_leidas=true&limit=99`);
@@ -59,9 +48,7 @@ async function loadAlertsBadge() {
     } catch (_) {}
 }
 
-// ============================================================
 // DASHBOARD
-// ============================================================
 async function loadDashboard() {
     const now       = new Date();
     const weekStart = new Date(now);

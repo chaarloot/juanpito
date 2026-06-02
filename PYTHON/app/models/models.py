@@ -29,9 +29,6 @@ tipo_alerta_enum = Enum(
     name="tipo_alerta_enum",
 )
 prioridad_enum = Enum("baja", "media", "alta", "urgente", name="prioridad_enum")
-# tipo_token_enum removed (only used by TokenAutenticacion which was deleted)
-
-# Usuario
 class Usuario(Base):
     __tablename__ = "usuarios"
 
@@ -49,18 +46,12 @@ class Usuario(Base):
     activo: Mapped[bool] = mapped_column(Boolean, default=True)
     fecha_creacion: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     fecha_actualizacion: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-    # Relaciones
     metricas: Mapped[List["MetricaSalud"]] = relationship("MetricaSalud", back_populates="usuario", cascade="all, delete-orphan")
     habitos: Mapped[List["Habito"]] = relationship("Habito", back_populates="usuario", cascade="all, delete-orphan")
     sesiones: Mapped[List["SesionEntrenamiento"]] = relationship("SesionEntrenamiento", back_populates="usuario", cascade="all, delete-orphan")
     medicaciones: Mapped[List["MedicacionProgramada"]] = relationship("MedicacionProgramada", back_populates="usuario", cascade="all, delete-orphan")
     planes: Mapped[List["Plan"]] = relationship("Plan", back_populates="usuario", foreign_keys="Plan.usuario_id", cascade="all, delete-orphan")
     alertas: Mapped[List["Alerta"]] = relationship("Alerta", back_populates="usuario", cascade="all, delete-orphan")
-    # tokens relationship removed (TokenAutenticacion model deleted)
-
-
-# Métrica de salud 
 class MetricaSalud(Base):
     __tablename__ = "metricas_salud"
 
@@ -83,9 +74,6 @@ class MetricaSalud(Base):
     )
 
     usuario: Mapped["Usuario"] = relationship("Usuario", back_populates="metricas")
-
-
-# Hábito 
 class Habito(Base):
     __tablename__ = "habitos"
 
@@ -103,9 +91,6 @@ class Habito(Base):
 
     usuario: Mapped["Usuario"] = relationship("Usuario", back_populates="habitos")
     registros: Mapped[List["RegistroHabito"]] = relationship("RegistroHabito", back_populates="habito", cascade="all, delete-orphan")
-
-
-# Registro de hábito 
 class RegistroHabito(Base):
     __tablename__ = "registros_habitos"
 
@@ -121,9 +106,6 @@ class RegistroHabito(Base):
     )
 
     habito: Mapped["Habito"] = relationship("Habito", back_populates="registros")
-
-
-# Sesión de entrenamiento
 class SesionEntrenamiento(Base):
     __tablename__ = "sesiones_entrenamiento"
 
@@ -143,9 +125,6 @@ class SesionEntrenamiento(Base):
     )
 
     usuario: Mapped["Usuario"] = relationship("Usuario", back_populates="sesiones")
-
-
-# Medicación programada
 class MedicacionProgramada(Base):
     __tablename__ = "medicacion_programada"
 
@@ -163,9 +142,6 @@ class MedicacionProgramada(Base):
     fecha_actualizacion: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     usuario: Mapped["Usuario"] = relationship("Usuario", back_populates="medicaciones")
-
-
-# Plan 
 class Plan(Base):
     __tablename__ = "planes"
 
@@ -182,9 +158,6 @@ class Plan(Base):
     fecha_actualizacion: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     usuario: Mapped["Usuario"] = relationship("Usuario", back_populates="planes", foreign_keys=[usuario_id])
-    
-    
-# Alerta
 class Alerta(Base):
     __tablename__ = "alertas"
 
@@ -199,7 +172,3 @@ class Alerta(Base):
     fecha_creacion: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     usuario: Mapped["Usuario"] = relationship("Usuario", back_populates="alertas")
-
-
-# Token de autenticación 
-# TokenAutenticacion model removed — not referenced elsewhere

@@ -19,8 +19,6 @@ app = FastAPI(
     lifespan=lifespan,
     redirect_slashes=False,
 )
-
-# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -36,8 +34,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# ROUTERS
 app.include_router(auth.router)
 app.include_router(usuarios.router)
 app.include_router(metricas.router)

@@ -28,9 +28,6 @@ def _check_plan_access(plan: Plan, current_user: Usuario):
     if plan.usuario_id != current_user.usuario_id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Acceso denegado")
 
-
-# Planes
-
 @router.get("/", response_model=List[PlanOut])
 def list_planes(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: Usuario = Depends(get_current_user)):
     return (

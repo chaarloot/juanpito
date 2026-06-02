@@ -1,3 +1,6 @@
+<!--Panel principal con resumen de métricas, atajos y widgets (gráficos, rachas,
+    estadísticas rápidas). Utiliza ../js/dashboard.js para cargar datos agregados y renderizar widgets-->
+    
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -21,10 +24,10 @@
                 <button class="btn-new-training" id="btnNewWorkout">+ Nuevo Entrenamiento</button>
             </div>
 
-            <!-- XP BAR -->
+            
             <div id="xpContainer" style="margin-bottom:24px"></div>
 
-            <!-- STATS -->
+            
             <div class="stats-grid">
                 <div class="stat-card yellow">
                     <div class="stat-label">ENTRENAMIENTOS</div>
@@ -52,7 +55,7 @@
                 </div>
             </div>
 
-            <!-- GRÁFICO + RACHA + TIP -->
+            
             <div class="content-grid" style="grid-template-columns:2fr 1fr">
                 <div class="chart-container">
                     <div class="chart-header">
@@ -65,7 +68,7 @@
                 </div>
 
                 <div style="display:flex;flex-direction:column;gap:16px">
-                    <!-- RACHA -->
+                    
                     <div class="streak-container" style="flex:1">
                         <div class="chart-header">
                             <h3>RACHA ACTUAL</h3>
@@ -78,12 +81,12 @@
                         <div class="streak-info" id="streakMsg" style="text-align:center;margin-top:12px"></div>
                     </div>
 
-                    <!-- TIP DEL DÍA -->
+                    
                     <div id="tipDelDiaContainer"></div>
                 </div>
             </div>
 
-            <!-- SESIONES RECIENTES -->
+            
             <div class="exercises-container" style="margin-top:20px">
                 <div class="exercises-header">
                     <h3>ÚLTIMAS SESIONES</h3>
@@ -94,7 +97,7 @@
                 </div>
             </div>
 
-            <!-- Accesos rápidos eliminados -->
+            
 
         </div>
     </main>

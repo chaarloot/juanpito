@@ -118,8 +118,6 @@ def obtener_resumen_metricas(
             "sueño_minutos": {"promedio": None, "total": None},
             "nivel_estres": {"promedio": None, "minimo": None, "maximo": None},
         }
-
-    # Calcular promedios, mínimos y máximos
     def safe_avg(values):
         filtered = [v for v in values if v is not None]
         return sum(filtered) / len(filtered) if filtered else None

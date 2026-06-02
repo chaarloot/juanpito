@@ -1,7 +1,3 @@
-// ============================================================
-// dashboard.js — Vitalia JC
-// ============================================================
-
 let weeklyChartInstance = null;
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -1,3 +1,6 @@
+<!--Interfaz de temporizador/cronómetro para sesiones de trabajo/descanso.
+    Contiene controles de inicio/pausa/reset y audio/alertas-->
+    
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -17,7 +20,7 @@
                 <h1>⏱ TEMPORIZADOR</h1>
             </div>
 
-            <!-- SELECTOR DE MODO -->
+            
             <div class="timer-mode-grid">
                 <button class="timer-mode-btn active" data-mode="libre" onclick="setMode('libre')">
                     <span class="tmode-icon">🕐</span>
@@ -41,10 +44,10 @@
                 </button>
             </div>
 
-            <!-- CONFIGURACIÓN -->
+            
             <div class="timer-config" id="timerConfig"></div>
 
-            <!-- DISPLAY PRINCIPAL -->
+            
             <div class="timer-display-wrap">
                 <svg class="timer-ring" viewBox="0 0 220 220">
                     <circle class="timer-ring-bg" cx="110" cy="110" r="100"/>
@@ -58,14 +61,14 @@
                 </div>
             </div>
 
-            <!-- CONTROLES -->
+            
             <div class="timer-controls">
                 <button class="timer-btn-secondary" id="btnReset" onclick="resetTimer()">↺ Reset</button>
                 <button class="timer-btn-primary"   id="btnStart" onclick="toggleTimer()">▶ Iniciar</button>
                 <button class="timer-btn-secondary" id="btnSkip"  onclick="skipPhase()">⏭ Saltar</button>
             </div>
 
-            <!-- HISTORIAL DE RONDAS -->
+            
             <div class="timer-log-wrap">
                 <div class="chart-header" style="margin-bottom:12px">
                     <h3>REGISTRO DE RONDAS</h3>

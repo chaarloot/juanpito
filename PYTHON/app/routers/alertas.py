@@ -34,7 +34,7 @@ def list_alertas(
 ):
     query = db.query(Alerta).filter(Alerta.usuario_id == current_user.usuario_id)
     if solo_no_leidas:
-        query = query.filter(Alerta.leida == False)  # noqa: E712
+        query = query.filter(Alerta.leida == False)
     return query.order_by(Alerta.fecha_creacion.desc()).offset(skip).limit(limit).all()
 
 
@@ -75,7 +75,7 @@ def marcar_leida(alerta_id: int, db: Session = Depends(get_db), current_user: Us
 @router.patch("/leer-todas", status_code=status.HTTP_204_NO_CONTENT)
 def marcar_todas_leidas(db: Session = Depends(get_db), current_user: Usuario = Depends(get_current_user)):
     """Marca todas las alertas del usuario como leídas."""
-    db.query(Alerta).filter(Alerta.usuario_id == current_user.usuario_id, Alerta.leida == False).update({"leida": True})  # noqa: E712
+    db.query(Alerta).filter(Alerta.usuario_id == current_user.usuario_id, Alerta.leida == False).update({"leida": True})
     db.commit()
 
 

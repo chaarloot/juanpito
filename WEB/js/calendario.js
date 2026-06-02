@@ -1,7 +1,3 @@
-// ============================================================
-// calendario.js — Vitalia JC
-// ============================================================
-
 let currentYear  = new Date().getFullYear();
 let currentMonth = new Date().getMonth();
 

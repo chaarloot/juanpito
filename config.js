@@ -1,3 +1,5 @@
+// asegurarse de la URL
+
 (() => {
 	const fallback = 'http://127.0.0.1:8000';
 

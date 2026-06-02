@@ -7,16 +7,10 @@ from app.models.models import Usuario
 from app.schemas.schemas import UsuarioOut, UsuarioUpdate
 
 router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
-
-
-# PERFIL DEL USUARIO AUTENTICADO
 @router.get("/me", response_model=UsuarioOut)
 def get_me(current_user: Usuario = Depends(get_current_user)):
     """Devuelve el perfil del usuario autenticado."""
     return current_user
-
-
-# OBTENER USUARIO POR ID (SOLO EL MISMO USUARIO)
 @router.get("/{usuario_id}", response_model=UsuarioOut)
 def get_user_by_id(
     usuario_id: int,
@@ -31,9 +25,6 @@ def get_user_by_id(
         raise HTTPException(403, "No tienes permiso para ver este usuario")
 
     return usuario
-
-
-# ACTUALIZAR PERFIL (EL MISMO USUARIO)
 @router.put("/me", response_model=UsuarioOut)
 def update_me(
     data: UsuarioUpdate,
@@ -53,9 +44,6 @@ def update_me(
     db.commit()
     db.refresh(current_user)
     return current_user
-
-
-# ELIMINAR CUENTA PROPIA
 @router.delete("/me", status_code=204)
 def delete_me(
     db: Session = Depends(get_db),
@@ -68,9 +56,6 @@ def delete_me(
     db.delete(usuario)
     db.commit()
     return
-
-
-# ELIMINAR USUARIO (EL PROPIO USUARIO)
 @router.delete("/{usuario_id}", status_code=204)
 def delete_user(usuario_id: int, db: Session = Depends(get_db), current_user: Usuario = Depends(get_current_user)):
     if current_user.usuario_id != usuario_id:

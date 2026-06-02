@@ -1,10 +1,11 @@
 DROP DATABASE IF EXISTS VitaliaCJ;
 CREATE DATABASE IF NOT EXISTS VitaliaCJ
-    CHARACTER SET utf8mb4
-    COLLATE utf8mb4_spanish_ci;
+    CHARACTER SET utf8mb4 -- acepta acentos, ñ y emojis
+    COLLATE utf8mb4_spanish_ci; -- mayusculas/minúsculas
 USE VitaliaCJ;
 
-SET FOREIGN_KEY_CHECKS = 0;
+-- apaga las depencias entre tablas para eliminarlas bien
+SET FOREIGN_KEY_CHECKS = 0; 
 
 DROP TABLE IF EXISTS tokens_autenticacion;
 DROP TABLE IF EXISTS alertas;
@@ -16,7 +17,7 @@ DROP TABLE IF EXISTS habitos;
 DROP TABLE IF EXISTS metricas_salud;
 DROP TABLE IF EXISTS usuarios;
 
-SET FOREIGN_KEY_CHECKS = 1;
+SET FOREIGN_KEY_CHECKS = 1; -- vuelve a activar las depencias
 
 CREATE TABLE usuarios (
     usuario_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -34,8 +35,8 @@ CREATE TABLE usuarios (
     ultimo_acceso DATETIME NULL,
     fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     fecha_actualizacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    UNIQUE KEY uq_usuarios_email (email),
-    INDEX idx_usuarios_activo (activo)
+    UNIQUE KEY uq_usuarios_email (email), -- registro unico
+    INDEX idx_usuarios_activo (activo) -- consultas rapidas
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
 
 CREATE TABLE metricas_salud (

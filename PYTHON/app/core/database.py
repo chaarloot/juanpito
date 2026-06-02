@@ -2,9 +2,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
 from app.core.config import settings
-
-
-# Configurar el engine según el tipo de BD
 if settings.DATABASE_URL.startswith("sqlite"):
     engine = create_engine(
         settings.DATABASE_URL,
@@ -14,8 +11,8 @@ if settings.DATABASE_URL.startswith("sqlite"):
 else:
     engine = create_engine(
         settings.DATABASE_URL,
-        pool_pre_ping=True,       # Detecta conexiones caídas
-        pool_recycle=3600,        # Recicla conexiones cada hora
+        pool_pre_ping=True,
+        pool_recycle=3600,
         echo=settings.DEBUG,
     )
 
@@ -24,9 +21,6 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 class Base(DeclarativeBase):
     pass
-
-
-#inyecta la sesión de BD a los endpoints
 def get_db():
     db = SessionLocal()
     try:

@@ -1,3 +1,7 @@
+<!--Página de autenticación (login y registro). Contiene formularios de inicio/registro,
+    validaciones de cliente (contraseña, confirmación), toggles de visibilidad y gestión de pestañas
+    Scripts: /config.js, ../js/shared.js, ../js/login.js-->
+    
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -10,7 +14,7 @@
 </head>
 <body>
 
-<!-- LEFT PANEL -->
+
 <div class="left-panel">
     <div class="grid-bg"></div>
     <div class="deco-num">PRO</div>
@@ -43,17 +47,17 @@
     </div>
 </div>
 
-<!-- RIGHT PANEL -->
+
 <div class="right-panel">
     <div class="form-logo">Vitalia<span>JC</span></div>
 
-    <!-- TABS -->
+    
     <div class="tabs">
         <div class="tab active" onclick="switchTab('login')">Iniciar sesión</div>
         <div class="tab" onclick="switchTab('registro')">Crear cuenta</div>
     </div>
 
-    <!-- LOGIN FORM -->
+    
     <div class="form-panel active" id="form-login">
         <div class="field">
             <label for="loginEmail">Correo electrónico</label>
@@ -78,7 +82,7 @@
         </div>
     </div>
 
-    <!-- REGISTRO FORM -->
+    
     <div class="form-panel" id="form-registro">
         <div class="field-row">
             <div class="field"> 
@@ -215,7 +219,6 @@
         const msg = String(message);
         const lower = msg.toLowerCase();
 
-        // Email
         if ((field === 'email') || lower.includes('email') || lower.includes('@') || lower.includes('correo')) {
             if (lower.includes('exactly one @') || lower.includes('must have exactly one @') || lower.includes('one @')) {
                 return 'Correo electrónico no válido: debe contener una única @.';
@@ -223,7 +226,6 @@
             return 'Correo electrónico no válido.';
         }
 
-        // Password
         if (field === 'password' || lower.includes('password') || lower.includes('contraseña')) {
             if (lower.includes('mayúscula') || lower.includes('uppercase') || lower.includes('mayus')) return 'Contraseña: debe contener al menos una letra mayúscula.';
             const m = lower.match(/(\d+)/);
@@ -234,14 +236,12 @@
             return msg.replace(/value error,?/i, '').trim();
         }
 
-        // Nombre/Apellidos
         if (field === 'nombre' || field === 'apellidos' || lower.includes('nombre') || lower.includes('apellidos') || lower.includes('name')) {
             const m = lower.match(/(\d+)/);
             if (m) return `Nombre/Apellido: debe tener al menos ${m[0]} caracteres.`;
             return msg;
         }
 
-        // Default: devolver el mensaje original
         return msg;
     }
 
@@ -301,7 +301,7 @@
             });
             if (!res.ok) {
                 const d = await res.json().catch(() => ({}));
-                // Construir mensaje legible si backend devuelve detail (array de errores)
+                // Construir mensaje legible si backend devuelve (array de errores)
                 if (d && d.detail && Array.isArray(d.detail)) {
                     const msgArr = d.detail.map(it => formatDetailItem(it));
                     throw new Error(msgArr.join(' | '));
